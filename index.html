@@ -309,8 +309,10 @@ async function fetchOTCPrice(code) {
 
 async function getPrice(code) {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TW?interval=1d&range=1d`;
-    const res = await fetch(url);
+    const url = `https://query2.finance.yahoo.com/v8/finance/chart/${code}.TW?interval=1d&range=5d&corsDomain=finance.yahoo.com`;
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
     const data = await res.json();
     const meta = data.chart.result[0].meta;
     const price = meta.regularMarketPrice;

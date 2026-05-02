@@ -42,59 +42,26 @@
     border-bottom: 0.5px solid var(--border2);
   }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
 
   .logo {
-    width: 48px;
-    height: 48px;
+    width: 48px; height: 48px;
     background: linear-gradient(135deg, #1a365d, #2b6cb0);
     border-radius: 12px;
     border: 1px solid var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 24px;
   }
 
-  .title h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 2px;
-  }
+  .title h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+  .title p { font-size: 12px; color: var(--text2); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
 
-  .title p {
-    font-size: 12px;
-    color: var(--text2);
-    font-family: 'Share Tech Mono', monospace;
-    margin-top: 2px;
-  }
+  .status-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); font-family: 'Share Tech Mono', monospace; }
 
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--text2);
-    font-family: 'Share Tech Mono', monospace;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
   .metrics {
     display: grid;
@@ -112,38 +79,15 @@
     overflow: hidden;
   }
 
-  .metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .metric-card.blue::before { background: var(--accent); }
   .metric-card.green::before { background: var(--green); }
   .metric-card.red::before { background: var(--red); }
   .metric-card.amber::before { background: var(--amber); }
 
-  .metric-label {
-    font-size: 11px;
-    color: var(--text2);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .metric-value {
-    font-size: 28px;
-    font-weight: 700;
-    font-family: 'Share Tech Mono', monospace;
-    color: var(--text);
-  }
-
-  .metric-sub {
-    font-size: 11px;
-    color: var(--text2);
-    margin-top: 4px;
-  }
+  .metric-label { font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .metric-value { font-size: 28px; font-weight: 700; font-family: 'Share Tech Mono', monospace; color: var(--text); }
+  .metric-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
 
   .section {
     background: var(--bg2);
@@ -153,20 +97,8 @@
     margin-bottom: 20px;
   }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
 
   .refresh-btn {
     background: transparent;
@@ -180,157 +112,71 @@
     transition: all 0.2s;
   }
 
-  .refresh-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th {
-    text-align: left;
-    padding: 8px 12px;
-    color: var(--text2);
-    font-weight: 500;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-bottom: 0.5px solid var(--border);
-  }
-
-  td {
-    padding: 12px;
-    border-bottom: 0.5px solid var(--border);
-    vertical-align: top;
-  }
-
-  tr:last-child td { border-bottom: none; }
-
-  tr:hover td { background: rgba(99, 179, 237, 0.03); }
-
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .badge-green { background: rgba(72, 187, 120, 0.15); color: var(--green); border: 0.5px solid rgba(72, 187, 120, 0.3); }
-  .badge-red { background: rgba(252, 129, 129, 0.15); color: var(--red); border: 0.5px solid rgba(252, 129, 129, 0.3); }
-  .badge-amber { background: rgba(246, 173, 85, 0.15); color: var(--amber); border: 0.5px solid rgba(246, 173, 85, 0.3); }
-  .badge-blue { background: rgba(99, 179, 237, 0.15); color: var(--accent); border: 0.5px solid rgba(99, 179, 237, 0.3); }
-  .badge-purple { background: rgba(183, 148, 244, 0.15); color: var(--purple); border: 0.5px solid rgba(183, 148, 244, 0.3); }
-
-  .analysis-text {
-    font-size: 12px;
-    color: var(--text2);
-    line-height: 1.6;
-    max-width: 400px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .ticker {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .price {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-    color: var(--accent2);
-  }
-
-  .time-text {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--text2);
-  }
-
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--text2);
-    font-size: 13px;
-  }
-
-  .empty {
-    text-align: center;
-    padding: 40px;
-    color: var(--text2);
-    font-size: 13px;
-  }
-
-  .error-msg {
-    text-align: center;
-    padding: 20px;
-    color: var(--red);
-    font-size: 13px;
-    background: rgba(252, 129, 129, 0.05);
-    border-radius: 8px;
-    border: 0.5px solid rgba(252, 129, 129, 0.2);
-  }
-
-  .rsi-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .rsi-track {
-    width: 60px;
-    height: 4px;
+  .stock-card {
     background: var(--bg3);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .rsi-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
-
-  .footer {
-    margin-top: 24px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--text2);
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .stock-filter {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-
-  .filter-btn {
-    background: transparent;
     border: 0.5px solid var(--border);
-    color: var(--text2);
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: 'Noto Sans TC', sans-serif;
-    transition: all 0.2s;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
   }
 
-  .filter-btn.active, .filter-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(99, 179, 237, 0.08);
-  }
+  .stock-card:hover { border-color: var(--border2); }
+
+  .stock-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .stock-code { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); }
+  .stock-name { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
+  .stock-price { font-family: 'Share Tech Mono', monospace; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+
+  .stock-change { font-family: 'Share Tech Mono', monospace; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .change-up { color: var(--red); }
+  .change-down { color: var(--green); }
+  .change-flat { color: var(--text2); }
+
+  .market-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; }
+  .market-open { background: rgba(72,187,120,0.15); color: var(--green); border: 0.5px solid rgba(72,187,120,0.3); }
+  .market-closed { background: rgba(148,163,184,0.15); color: var(--text2); border: 0.5px solid rgba(148,163,184,0.3); }
+
+  .price-loading { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text2); animation: blink 1s infinite; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; color: var(--text2); font-weight: 500; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 0.5px solid var(--border); }
+  td { padding: 12px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(99,179,237,0.03); }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .badge-green { background: rgba(72,187,120,0.15); color: var(--green); border: 0.5px solid rgba(72,187,120,0.3); }
+  .badge-red { background: rgba(252,129,129,0.15); color: var(--red); border: 0.5px solid rgba(252,129,129,0.3); }
+  .badge-amber { background: rgba(246,173,85,0.15); color: var(--amber); border: 0.5px solid rgba(246,173,85,0.3); }
+  .badge-blue { background: rgba(99,179,237,0.15); color: var(--accent); border: 0.5px solid rgba(99,179,237,0.3); }
+  .badge-purple { background: rgba(183,148,244,0.15); color: var(--purple); border: 0.5px solid rgba(183,148,244,0.3); }
+
+  .analysis-text { font-size: 12px; color: var(--text2); line-height: 1.6; max-width: 400px; white-space: pre-wrap; word-break: break-word; }
+  .ticker { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: 500; color: var(--text); }
+  .price-text { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--accent2); }
+  .time-text { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text2); }
+
+  .loading { text-align: center; padding: 40px; color: var(--text2); font-size: 13px; }
+  .empty { text-align: center; padding: 40px; color: var(--text2); font-size: 13px; }
+  .error-msg { text-align: center; padding: 20px; color: var(--red); font-size: 13px; background: rgba(252,129,129,0.05); border-radius: 8px; border: 0.5px solid rgba(252,129,129,0.2); }
+
+  .rsi-bar { display: flex; align-items: center; gap: 8px; }
+  .rsi-track { width: 60px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .rsi-fill { height: 100%; border-radius: 2px; }
+
+  .stock-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn { background: transparent; border: 0.5px solid var(--border); color: var(--text2); padding: 4px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s; }
+  .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(99,179,237,0.08); }
+
+  .footer { margin-top: 24px; text-align: center; font-size: 11px; color: var(--text2); font-family: 'Share Tech Mono', monospace; }
 </style>
 </head>
 <body>
@@ -374,17 +220,24 @@
 
 <div class="section">
   <div class="section-header">
-    <span class="section-title">股票篩選</span>
+    <span class="section-title">監控股票 · 即時行情</span>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="market-status-badge" class="market-status market-closed">休市中</span>
+      <button class="refresh-btn" onclick="loadPrices()">更新價格</button>
+    </div>
   </div>
-  <div class="stock-filter" id="stock-filter">
-    <button class="filter-btn active" onclick="filterStock('全部')">全部</button>
+  <div class="stocks-grid" id="stocks-grid">
+    <div class="loading">載入即時股價中...</div>
   </div>
 </div>
 
 <div class="section">
   <div class="section-header">
     <span class="section-title">警報記錄</span>
-    <button class="refresh-btn" onclick="loadData()">重新整理</button>
+    <button class="refresh-btn" onclick="loadAlerts()">重新整理</button>
+  </div>
+  <div class="stock-filter" id="stock-filter">
+    <button class="filter-btn active" onclick="filterStock('全部')">全部</button>
   </div>
   <div id="table-container">
     <div class="loading">載入資料中...</div>
@@ -392,7 +245,7 @@
 </div>
 
 <div class="footer">
-  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：Google Sheets + Claude AI
+  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：TWSE + Google Sheets + Claude AI
 </div>
 
 <script>
@@ -400,8 +253,114 @@ const SHEET_ID = '1YLdYoXehvpHA_PT5wT-qw2qnPFY1jPA4uape1HCVHEc';
 const SHEET_NAME = 'Sheet1';
 const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
+const WATCH_STOCKS = [
+  { code: '3715', name: '定穎投控' },
+  { code: '6239', name: '力成' },
+  { code: '6456', name: 'GIS-KY' },
+  { code: '1815', name: '富喬' },
+  { code: '3388', name: '崇越電' },
+  { code: '4772', name: '台特化' }
+];
+
 let allData = [];
 let currentFilter = '全部';
+
+function isMarketOpen() {
+  const now = new Date();
+  const tw = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+  const day = tw.getDay();
+  const totalMin = tw.getHours() * 60 + tw.getMinutes();
+  return day >= 1 && day <= 5 && totalMin >= 540 && totalMin <= 810;
+}
+
+async function fetchTWSEPrice(code) {
+  try {
+    const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${code}.tw&json=1&delay=0&_=${Date.now()}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.msgArray && data.msgArray.length > 0) {
+      const s = data.msgArray[0];
+      const price = parseFloat(s.z !== '-' ? s.z : s.y);
+      const prev = parseFloat(s.y);
+      const high = parseFloat(s.h);
+      const low = parseFloat(s.l);
+      if (price && price > 0) return { price, prev, high, low };
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function fetchOTCPrice(code) {
+  try {
+    const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${code}.tw&json=1&delay=0&_=${Date.now()}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.msgArray && data.msgArray.length > 0) {
+      const s = data.msgArray[0];
+      const price = parseFloat(s.z !== '-' ? s.z : s.y);
+      const prev = parseFloat(s.y);
+      const high = parseFloat(s.h);
+      const low = parseFloat(s.l);
+      if (price && price > 0) return { price, prev, high, low };
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function getPrice(code) {
+  let result = await fetchTWSEPrice(code);
+  if (!result) result = await fetchOTCPrice(code);
+  return result;
+}
+
+async function loadPrices() {
+  const open = isMarketOpen();
+  document.getElementById('market-status-badge').textContent = open ? '交易中' : '休市中';
+  document.getElementById('market-status-badge').className = `market-status ${open ? 'market-open' : 'market-closed'}`;
+
+  const grid = document.getElementById('stocks-grid');
+  grid.innerHTML = WATCH_STOCKS.map(s =>
+    `<div class="stock-card" id="card-${s.code}">
+      <div class="stock-card-header"><span class="stock-code">${s.code}</span></div>
+      <div class="stock-name">${s.name}</div>
+      <div class="price-loading">載入中...</div>
+    </div>`
+  ).join('');
+
+  for (const stock of WATCH_STOCKS) {
+    const card = document.getElementById(`card-${stock.code}`);
+    const result = await getPrice(stock.code);
+
+    if (result) {
+      const { price, prev, high, low } = result;
+      const change = prev ? (price - prev) : 0;
+      const changePct = prev ? ((change / prev) * 100) : 0;
+      const changeClass = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
+      const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '－';
+
+      card.innerHTML = `
+        <div class="stock-card-header"><span class="stock-code">${stock.code}</span></div>
+        <div class="stock-name">${stock.name}</div>
+        <div class="stock-price">${price.toFixed(2)}</div>
+        <div class="stock-change ${changeClass}">
+          ${changeSymbol} ${Math.abs(change).toFixed(2)}
+          <span style="font-size:11px">(${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)</span>
+        </div>
+        ${(high && low) ? `<div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${high.toFixed(2)} · L ${low.toFixed(2)}</div>` : ''}
+        ${!open ? '<div style="font-size:10px;color:var(--text2);margin-top:4px;">最後收盤價</div>' : ''}
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="stock-card-header"><span class="stock-code">${stock.code}</span></div>
+        <div class="stock-name">${stock.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:8px;">${open ? '暫無報價' : '休市中'}</div>
+      `;
+    }
+  }
+
+  const now = new Date();
+  document.getElementById('last-update').textContent = `最後更新：${now.toLocaleTimeString('zh-TW')}`;
+}
 
 function getBadgeClass(signal) {
   if (!signal) return 'badge-blue';
@@ -428,10 +387,7 @@ function filterStock(ticker) {
 }
 
 function renderTable(data) {
-  const filtered = currentFilter === '全部'
-    ? data
-    : data.filter(row => row.ticker === currentFilter);
-
+  const filtered = currentFilter === '全部' ? data : data.filter(row => row.ticker === currentFilter);
   const container = document.getElementById('table-container');
 
   if (filtered.length === 0) {
@@ -444,54 +400,37 @@ function renderTable(data) {
     const rsiWidth = isNaN(rsi) ? 0 : Math.min(100, Math.max(0, rsi));
     const rsiColor = getRsiColor(rsi);
     const badgeClass = getBadgeClass(row.signal);
-    const shortAnalysis = row.analysis
-      ? row.analysis.substring(0, 200) + (row.analysis.length > 200 ? '...' : '')
-      : '-';
+    const shortAnalysis = row.analysis ? row.analysis.substring(0, 200) + (row.analysis.length > 200 ? '...' : '') : '-';
 
-    return `
-      <tr>
-        <td><span class="time-text">${row.time || '-'}</span></td>
-        <td><span class="ticker">${row.ticker || '-'}</span></td>
-        <td><span class="price">${row.price ? parseFloat(row.price).toFixed(2) : '-'}</span></td>
-        <td>
-          <div class="rsi-bar">
-            <span class="time-text" style="min-width:32px">${isNaN(rsi) ? '-' : rsi.toFixed(1)}</span>
-            <div class="rsi-track">
-              <div class="rsi-fill" style="width:${rsiWidth}%; background:${rsiColor}"></div>
-            </div>
-          </div>
-        </td>
-        <td><span class="badge ${badgeClass}">${row.signal || '-'}</span></td>
-        <td><div class="analysis-text">${shortAnalysis}</div></td>
-      </tr>
-    `;
+    return `<tr>
+      <td><span class="time-text">${row.time || '-'}</span></td>
+      <td><span class="ticker">${row.ticker || '-'}</span></td>
+      <td><span class="price-text">${row.price ? parseFloat(row.price).toFixed(2) : '-'}</span></td>
+      <td>
+        <div class="rsi-bar">
+          <span class="time-text" style="min-width:32px">${isNaN(rsi) ? '-' : rsi.toFixed(1)}</span>
+          <div class="rsi-track"><div class="rsi-fill" style="width:${rsiWidth}%;background:${rsiColor}"></div></div>
+        </div>
+      </td>
+      <td><span class="badge ${badgeClass}">${row.signal || '-'}</span></td>
+      <td><div class="analysis-text">${shortAnalysis}</div></td>
+    </tr>`;
   }).join('');
 
   container.innerHTML = `
     <table>
-      <thead>
-        <tr>
-          <th>時間</th>
-          <th>股票</th>
-          <th>價格</th>
-          <th>RSI</th>
-          <th>訊號</th>
-          <th>Claude 分析</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>時間</th><th>股票</th><th>警報價格</th><th>RSI</th><th>訊號</th><th>Claude 分析</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
-    </table>
-  `;
+    </table>`;
 }
 
 function updateMetrics(data) {
   document.getElementById('total-count').textContent = data.length;
-  document.getElementById('buy-count').textContent =
-    data.filter(r => r.signal && r.signal.includes('進場')).length;
-  document.getElementById('sell-count').textContent =
-    data.filter(r => r.signal && r.signal.includes('出場')).length;
-  document.getElementById('trend-count').textContent =
-    data.filter(r => r.signal && (r.signal.includes('趨勢') || r.signal.includes('風險'))).length;
+  document.getElementById('buy-count').textContent = data.filter(r => r.signal && r.signal.includes('進場')).length;
+  document.getElementById('sell-count').textContent = data.filter(r => r.signal && r.signal.includes('出場')).length;
+  document.getElementById('trend-count').textContent = data.filter(r => r.signal && (r.signal.includes('趨勢') || r.signal.includes('風險'))).length;
 }
 
 function updateFilters(data) {
@@ -503,19 +442,17 @@ function updateFilters(data) {
   });
 }
 
-async function loadData() {
+async function loadAlerts() {
   try {
     const res = await fetch(API_URL);
     const text = await res.text();
     const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
     const rows = json.table.rows;
-    const cols = json.table.cols;
 
     if (!rows || rows.length === 0) {
       allData = [];
       renderTable([]);
       updateMetrics([]);
-      document.getElementById('last-update').textContent = '尚無資料';
       return;
     }
 
@@ -531,20 +468,20 @@ async function loadData() {
     updateMetrics(allData);
     updateFilters(allData);
     renderTable(allData);
-
-    const now = new Date();
-    document.getElementById('last-update').textContent =
-      `最後更新：${now.toLocaleTimeString('zh-TW')}`;
-
   } catch (err) {
     document.getElementById('table-container').innerHTML =
-      `<div class="error-msg">載入失敗，請確認 Google Sheets 已設定為公開可讀取<br><small>${err.message}</small></div>`;
-    document.getElementById('last-update').textContent = '載入失敗';
+      `<div class="error-msg">警報記錄載入失敗，請確認 Google Sheets 已設定為公開可讀取<br><small>${err.message}</small></div>`;
   }
 }
 
-loadData();
-setInterval(loadData, 60000);
+async function init() {
+  await loadPrices();
+  await loadAlerts();
+}
+
+init();
+setInterval(loadPrices, isMarketOpen() ? 30000 : 300000);
+setInterval(loadAlerts, 60000);
 </script>
 </body>
 </html>

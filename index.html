@@ -308,9 +308,18 @@ async function fetchOTCPrice(code) {
 }
 
 async function getPrice(code) {
-  let result = await fetchTWSEPrice(code);
-  if (!result) result = await fetchOTCPrice(code);
-  return result;
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TW?interval=1d&range=1d`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const meta = data.chart.result[0].meta;
+    const price = meta.regularMarketPrice;
+    const prev = meta.chartPreviousClose;
+    const high = meta.regularMarketDayHigh;
+    const low = meta.regularMarketDayLow;
+    if (price) return { price, prev, high, low };
+  } catch(e) {}
+  return null;
 }
 
 async function loadPrices() {

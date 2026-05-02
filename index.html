@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>股市戰情室儀表板</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --border: rgba(99, 179, 237, 0.15);
+    --border2: rgba(99, 179, 237, 0.3);
+    --accent: #63b3ed;
+    --accent2: #4fd1c5;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --green: #48bb78;
+    --red: #fc8181;
+    --amber: #f6ad55;
+    --purple: #b794f4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid var(--border2);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    border-radius: 12px;
+    border: 1px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .title h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .title p {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'Share Tech Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .metric-card.blue::before { background: var(--accent); }
+  .metric-card.green::before { background: var(--green); }
+  .metric-card.red::before { background: var(--red); }
+  .metric-card.amber::before { background: var(--amber); }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text);
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .section {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .refresh-btn {
+    background: transparent;
+    border: 0.5px solid var(--border2);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .refresh-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--text2);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(99, 179, 237, 0.03); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .badge-green { background: rgba(72, 187, 120, 0.15); color: var(--green); border: 0.5px solid rgba(72, 187, 120, 0.3); }
+  .badge-red { background: rgba(252, 129, 129, 0.15); color: var(--red); border: 0.5px solid rgba(252, 129, 129, 0.3); }
+  .badge-amber { background: rgba(246, 173, 85, 0.15); color: var(--amber); border: 0.5px solid rgba(246, 173, 85, 0.3); }
+  .badge-blue { background: rgba(99, 179, 237, 0.15); color: var(--accent); border: 0.5px solid rgba(99, 179, 237, 0.3); }
+  .badge-purple { background: rgba(183, 148, 244, 0.15); color: var(--purple); border: 0.5px solid rgba(183, 148, 244, 0.3); }
+
+  .analysis-text {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+    max-width: 400px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .ticker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .price {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--accent2);
+  }
+
+  .time-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text2);
+    font-size: 13px;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--text2);
+    font-size: 13px;
+  }
+
+  .error-msg {
+    text-align: center;
+    padding: 20px;
+    color: var(--red);
+    font-size: 13px;
+    background: rgba(252, 129, 129, 0.05);
+    border-radius: 8px;
+    border: 0.5px solid rgba(252, 129, 129, 0.2);
+  }
+
+  .rsi-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rsi-track {
+    width: 60px;
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .rsi-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .stock-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    color: var(--text2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(99, 179, 237, 0.08);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">📡</div>
+    <div class="title">
+      <h1>股市戰情室</h1>
+      <p>STOCK WAR ROOM · AI POWERED</p>
+    </div>
+  </div>
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <span id="last-update">載入中...</span>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric-card blue">
+    <div class="metric-label">總警報次數</div>
+    <div class="metric-value" id="total-count">-</div>
+    <div class="metric-sub">歷史累計</div>
+  </div>
+  <div class="metric-card green">
+    <div class="metric-label">強力進場</div>
+    <div class="metric-value" id="buy-count">-</div>
+    <div class="metric-sub">進場訊號</div>
+  </div>
+  <div class="metric-card red">
+    <div class="metric-label">強力出場</div>
+    <div class="metric-value" id="sell-count">-</div>
+    <div class="metric-sub">出場訊號</div>
+  </div>
+  <div class="metric-card amber">
+    <div class="metric-label">趨勢 / 風險</div>
+    <div class="metric-value" id="trend-count">-</div>
+    <div class="metric-sub">趨勢訊號</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-title">股票篩選</span>
+  </div>
+  <div class="stock-filter" id="stock-filter">
+    <button class="filter-btn active" onclick="filterStock('全部')">全部</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-title">警報記錄</span>
+    <button class="refresh-btn" onclick="loadData()">重新整理</button>
+  </div>
+  <div id="table-container">
+    <div class="loading">載入資料中...</div>
+  </div>
+</div>
+
+<div class="footer">
+  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：Google Sheets + Claude AI
+</div>
+
+<script>
+const SHEET_ID = '1YLdYoXehvpHA_PT5wT-qw2qnPFY1jPA4uape1HCVHEc';
+const SHEET_NAME = 'Sheet1';
+const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+let allData = [];
+let currentFilter = '全部';
+
+function getBadgeClass(signal) {
+  if (!signal) return 'badge-blue';
+  if (signal.includes('進場')) return 'badge-green';
+  if (signal.includes('出場')) return 'badge-red';
+  if (signal.includes('趨勢') || signal.includes('黃金')) return 'badge-blue';
+  if (signal.includes('風險') || signal.includes('死亡')) return 'badge-amber';
+  return 'badge-purple';
+}
+
+function getRsiColor(rsi) {
+  if (!rsi || isNaN(rsi)) return '#94a3b8';
+  if (rsi > 70) return '#fc8181';
+  if (rsi < 30) return '#48bb78';
+  return '#63b3ed';
+}
+
+function filterStock(ticker) {
+  currentFilter = ticker;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === ticker);
+  });
+  renderTable(allData);
+}
+
+function renderTable(data) {
+  const filtered = currentFilter === '全部'
+    ? data
+    : data.filter(row => row.ticker === currentFilter);
+
+  const container = document.getElementById('table-container');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty">尚無警報記錄，等待 TradingView 觸發訊號...</div>';
+    return;
+  }
+
+  const rows = filtered.slice().reverse().map(row => {
+    const rsi = parseFloat(row.rsi);
+    const rsiWidth = isNaN(rsi) ? 0 : Math.min(100, Math.max(0, rsi));
+    const rsiColor = getRsiColor(rsi);
+    const badgeClass = getBadgeClass(row.signal);
+    const shortAnalysis = row.analysis
+      ? row.analysis.substring(0, 200) + (row.analysis.length > 200 ? '...' : '')
+      : '-';
+
+    return `
+      <tr>
+        <td><span class="time-text">${row.time || '-'}</span></td>
+        <td><span class="ticker">${row.ticker || '-'}</span></td>
+        <td><span class="price">${row.price ? parseFloat(row.price).toFixed(2) : '-'}</span></td>
+        <td>
+          <div class="rsi-bar">
+            <span class="time-text" style="min-width:32px">${isNaN(rsi) ? '-' : rsi.toFixed(1)}</span>
+            <div class="rsi-track">
+              <div class="rsi-fill" style="width:${rsiWidth}%; background:${rsiColor}"></div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge ${badgeClass}">${row.signal || '-'}</span></td>
+        <td><div class="analysis-text">${shortAnalysis}</div></td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>時間</th>
+          <th>股票</th>
+          <th>價格</th>
+          <th>RSI</th>
+          <th>訊號</th>
+          <th>Claude 分析</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function updateMetrics(data) {
+  document.getElementById('total-count').textContent = data.length;
+  document.getElementById('buy-count').textContent =
+    data.filter(r => r.signal && r.signal.includes('進場')).length;
+  document.getElementById('sell-count').textContent =
+    data.filter(r => r.signal && r.signal.includes('出場')).length;
+  document.getElementById('trend-count').textContent =
+    data.filter(r => r.signal && (r.signal.includes('趨勢') || r.signal.includes('風險'))).length;
+}
+
+function updateFilters(data) {
+  const tickers = [...new Set(data.map(r => r.ticker).filter(Boolean))];
+  const filterDiv = document.getElementById('stock-filter');
+  filterDiv.innerHTML = `<button class="filter-btn ${currentFilter === '全部' ? 'active' : ''}" onclick="filterStock('全部')">全部</button>`;
+  tickers.forEach(ticker => {
+    filterDiv.innerHTML += `<button class="filter-btn ${currentFilter === ticker ? 'active' : ''}" onclick="filterStock('${ticker}')">${ticker}</button>`;
+  });
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(API_URL);
+    const text = await res.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+    const rows = json.table.rows;
+    const cols = json.table.cols;
+
+    if (!rows || rows.length === 0) {
+      allData = [];
+      renderTable([]);
+      updateMetrics([]);
+      document.getElementById('last-update').textContent = '尚無資料';
+      return;
+    }
+
+    allData = rows.map(row => ({
+      time: row.c[0]?.v || '',
+      ticker: row.c[1]?.v || '',
+      price: row.c[2]?.v || '',
+      rsi: row.c[3]?.v || '',
+      signal: row.c[4]?.v || '',
+      analysis: row.c[5]?.v || ''
+    })).filter(r => r.ticker || r.signal);
+
+    updateMetrics(allData);
+    updateFilters(allData);
+    renderTable(allData);
+
+    const now = new Date();
+    document.getElementById('last-update').textContent =
+      `最後更新：${now.toLocaleTimeString('zh-TW')}`;
+
+  } catch (err) {
+    document.getElementById('table-container').innerHTML =
+      `<div class="error-msg">載入失敗，請確認 Google Sheets 已設定為公開可讀取<br><small>${err.message}</small></div>`;
+    document.getElementById('last-update').textContent = '載入失敗';
+  }
+}
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>

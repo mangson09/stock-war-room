@@ -470,7 +470,7 @@ async function loadAlerts() {
     }
 
     allData = rows.map(row => ({
-      time: row.c[0]?.v || '',
+      time: row.c[0]?.f || row.c[0]?.v || '',
       ticker: row.c[1]?.v || '',
       price: row.c[2]?.v || '',
       rsi: row.c[3]?.v || '',

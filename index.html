@@ -24,6 +24,7 @@
   .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
   .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
   .metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
   .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
@@ -40,8 +41,10 @@
   .refresh-btn{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;}
   .refresh-btn:hover{border-color:var(--accent);color:var(--accent);}
   .stocks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
-  .stock-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color 0.2s;}
-  .stock-card:hover{border-color:var(--border2);}
+  .stock-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;transition:all 0.2s;cursor:pointer;position:relative;}
+  .stock-card:hover{border-color:var(--accent);background:#1e2d45;}
+  .stock-card .analyze-hint{position:absolute;bottom:8px;right:10px;font-size:10px;color:var(--accent);opacity:0;transition:opacity 0.2s;font-family:'Share Tech Mono',monospace;}
+  .stock-card:hover .analyze-hint{opacity:1;}
   .stock-code{font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:var(--accent);}
   .stock-name{font-size:12px;color:var(--text2);margin-bottom:10px;}
   .stock-price{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
@@ -53,6 +56,34 @@
   .market-open{background:rgba(72,187,120,0.15);color:var(--green);border:0.5px solid rgba(72,187,120,0.3);}
   .market-closed{background:rgba(148,163,184,0.15);color:var(--text2);border:0.5px solid rgba(148,163,184,0.3);}
   .price-loading{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text2);animation:blink 1s infinite;}
+
+  /* 分析彈出視窗 */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  .modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .modal-title{font-size:16px;font-weight:700;color:var(--accent);}
+  .modal-close{background:transparent;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px;}
+  .modal-close:hover{color:var(--text);}
+  .modal-info{background:var(--bg3);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .modal-info-item{font-size:12px;}
+  .modal-info-label{color:var(--text2);margin-bottom:2px;}
+  .modal-info-value{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
+  .modal-indicators{margin-bottom:16px;}
+  .indicator-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);}
+  .indicator-row:last-child{border-bottom:none;}
+  .indicator-name{font-size:12px;color:var(--text2);}
+  .indicator-value{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:500;}
+  .indicator-badge{font-size:10px;padding:2px 8px;border-radius:4px;}
+  .analyze-btn{width:100%;padding:12px;background:linear-gradient(135deg,#1a365d,#2b6cb0);border:1px solid var(--accent);color:var(--accent);border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;margin-bottom:12px;}
+  .analyze-btn:hover{background:linear-gradient(135deg,#2b6cb0,#3182ce);}
+  .analyze-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .analyzing-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
+  .analysis-result{background:var(--bg3);border-radius:8px;padding:16px;font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-top:12px;}
+  .analysis-result.success{border:0.5px solid rgba(99,179,237,0.3);}
+  .analysis-result.error{border:0.5px solid rgba(252,129,129,0.3);color:var(--red);}
+  .send-tg-btn{width:100%;padding:10px;background:transparent;border:0.5px solid var(--accent2);color:var(--accent2);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;margin-top:8px;}
+  .send-tg-btn:hover{background:rgba(79,209,197,0.1);}
+
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th{text-align:left;padding:8px 12px;color:var(--text2);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:0.5px solid var(--border);}
   td{padding:12px;border-bottom:0.5px solid var(--border);vertical-align:top;}
@@ -127,6 +158,7 @@
       <button class="refresh-btn" onclick="loadPrices()">更新價格</button>
     </div>
   </div>
+  <div style="font-size:11px;color:var(--text2);margin-bottom:12px;">點擊股票卡片可手動觸發 Claude AI 分析</div>
   <div class="stocks-grid" id="stocks-grid">
     <div class="loading">載入股價中...</div>
   </div>
@@ -149,9 +181,26 @@
   ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：FinMind + Google Sheets + Claude AI
 </div>
 
+<!-- 分析彈出視窗 -->
+<div class="modal-overlay" id="modal-overlay" style="display:none;" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">股票分析</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-info" id="modal-info"></div>
+    <div class="modal-indicators" id="modal-indicators"></div>
+    <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()">
+      🤖 Claude AI 即時分析 → Telegram
+    </button>
+    <div id="analysis-result" style="display:none;"></div>
+  </div>
+</div>
+
 <script>
 const SHEET_ID = '1YLdYoXehvpHA_PT5wT-qw2qnPFY1jPA4uape1HCVHEc';
 const SHEET_NAME = 'Sheet1';
+const WEBHOOK_URL = 'https://hook.us2.make.com/7giwak8asrrvcpbwqfqpncf16cp8yhmz';
 const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
 const WATCH_STOCKS = [
@@ -165,6 +214,9 @@ const WATCH_STOCKS = [
 
 let allData = [];
 let currentFilter = '全部';
+let priceCache = {};
+let currentStock = null;
+let currentIndicators = null;
 
 function isMarketOpen() {
   const now = new Date();
@@ -178,27 +230,238 @@ async function fetchPrice(code) {
   try {
     const today = new Date();
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 10);
+    startDate.setDate(today.getDate() - 40);
     const start = startDate.toISOString().split('T')[0];
     const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${code}&start_date=${start}&token=`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.data && data.data.length > 0) {
-      const latest = data.data[data.data.length - 1];
-      const prev = data.data.length > 1 ? data.data[data.data.length - 2].close : latest.close;
-      return {
-        price: latest.close,
-        prev: prev,
-        high: latest.max,
-        low: latest.min,
-        open: latest.open,
-        date: latest.date
-      };
+      return data.data;
+    }
+  } catch(e) {}
+  return null;
+}
+
+function calcRSI(closes, period) {
+  if (closes.length < period + 1) return null;
+  let gains = 0, losses = 0;
+  for (let i = closes.length - period; i < closes.length; i++) {
+    const diff = closes[i] - closes[i-1];
+    if (diff > 0) gains += diff;
+    else losses += Math.abs(diff);
+  }
+  const avgGain = gains / period;
+  const avgLoss = losses / period;
+  if (avgLoss === 0) return 100;
+  const rs = avgGain / avgLoss;
+  return Math.round((100 - (100 / (1 + rs))) * 10) / 10;
+}
+
+function calcEMA(closes, period) {
+  if (closes.length < period) return null;
+  const k = 2 / (period + 1);
+  let ema = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
+  for (let i = period; i < closes.length; i++) {
+    ema = closes[i] * k + ema * (1 - k);
+  }
+  return Math.round(ema * 100) / 100;
+}
+
+function calcMACD(closes) {
+  if (closes.length < 26) return null;
+  const ema6 = calcEMA(closes, 6);
+  const ema13 = calcEMA(closes, 13);
+  if (!ema6 || !ema13) return null;
+  const macd = Math.round((ema6 - ema13) * 100) / 100;
+  return { macd, ema6, ema13 };
+}
+
+function calcVolumeSurge(volumes) {
+  if (volumes.length < 21) return null;
+  const recent = volumes[volumes.length - 1];
+  const avg = volumes.slice(-21, -1).reduce((a, b) => a + b, 0) / 20;
+  return Math.round((recent / avg) * 100) / 100;
+}
+
+function calcIndicators(rawData) {
+  const closes = rawData.map(d => d.close);
+  const volumes = rawData.map(d => d.Trading_Volume);
+  const latest = rawData[rawData.length - 1];
+
+  const rsi6 = calcRSI(closes, 6);
+  const ma5 = calcEMA(closes, 5);
+  const ma20 = calcEMA(closes, 20);
+  const macdData = calcMACD(closes);
+  const volSurge = calcVolumeSurge(volumes);
+
+  const goldenCross = ma5 && ma20 && ma5 > ma20;
+  const rsiSignal = rsi6 > 70 ? '超買' : rsi6 < 30 ? '超賣' : '中性';
+  const macdSignal = macdData ? (macdData.macd > 0 ? '偏多' : '偏空') : '-';
+  const volSignal = volSurge ? (volSurge >= 1.5 ? `放量 ${volSurge}x` : `正常 ${volSurge}x`) : '-';
+
+  let overallSignal = '觀望';
+  if (rsi6 < 30 && volSurge >= 1.5) overallSignal = '強力進場';
+  else if (rsi6 > 70 && macdData && macdData.macd < 0) overallSignal = '強力出場';
+  else if (goldenCross && volSurge >= 1.5) overallSignal = '趨勢啟動';
+  else if (!goldenCross && rsi6 < 50) overallSignal = '風險警示';
+
+  return {
+    price: latest.close,
+    date: latest.date,
+    rsi6, ma5, ma20,
+    macd: macdData ? macdData.macd : null,
+    volSurge, goldenCross,
+    rsiSignal, macdSignal, volSignal, overallSignal
+  };
+}
+
+async function openStockModal(stock) {
+  currentStock = stock;
+  currentIndicators = null;
+
+  document.getElementById('modal-title').textContent = `${stock.code} ${stock.name} · AI 分析`;
+  document.getElementById('modal-info').innerHTML = `
+    <div class="modal-info-item">
+      <div class="modal-info-label">股票代碼</div>
+      <div class="modal-info-value">${stock.code}</div>
+    </div>
+    <div class="modal-info-item">
+      <div class="modal-info-label">股票名稱</div>
+      <div class="modal-info-value">${stock.name}</div>
+    </div>
+  `;
+  document.getElementById('modal-indicators').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px;animation:blink 1s infinite">計算技術指標中...</div>';
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('analysis-result').style.display = 'none';
+  document.getElementById('modal-overlay').style.display = 'flex';
+
+  const rawData = await fetchPrice(stock.code);
+  if (!rawData || rawData.length < 25) {
+    document.getElementById('modal-indicators').innerHTML = '<div style="color:var(--red);font-size:13px;">資料不足，無法計算指標</div>';
+    return;
+  }
+
+  const ind = calcIndicators(rawData);
+  currentIndicators = ind;
+
+  const rsiColor = ind.rsi6 > 70 ? 'var(--red)' : ind.rsi6 < 30 ? 'var(--green)' : 'var(--text)';
+  const maColor = ind.goldenCross ? 'var(--green)' : 'var(--red)';
+  const volColor = ind.volSurge >= 1.5 ? 'var(--amber)' : 'var(--text2)';
+
+  document.getElementById('modal-info').innerHTML = `
+    <div class="modal-info-item">
+      <div class="modal-info-label">最新收盤價</div>
+      <div class="modal-info-value" style="color:var(--accent2)">${ind.price.toFixed(2)}</div>
+    </div>
+    <div class="modal-info-item">
+      <div class="modal-info-label">資料日期</div>
+      <div class="modal-info-value">${ind.date}</div>
+    </div>
+  `;
+
+  document.getElementById('modal-indicators').innerHTML = `
+    <div class="indicator-row">
+      <span class="indicator-name">RSI（6日）</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="indicator-value" style="color:${rsiColor}">${ind.rsi6 || '-'}</span>
+        <span class="indicator-badge badge-${ind.rsi6 > 70 ? 'red' : ind.rsi6 < 30 ? 'green' : 'blue'}">${ind.rsiSignal}</span>
+      </div>
+    </div>
+    <div class="indicator-row">
+      <span class="indicator-name">均線（5日 / 20日）</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="indicator-value">${ind.ma5 || '-'} / ${ind.ma20 || '-'}</span>
+        <span class="indicator-badge ${ind.goldenCross ? 'badge-green' : 'badge-red'}" style="color:${maColor}">${ind.goldenCross ? '黃金交叉' : '死亡交叉'}</span>
+      </div>
+    </div>
+    <div class="indicator-row">
+      <span class="indicator-name">MACD</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="indicator-value">${ind.macd || '-'}</span>
+        <span class="indicator-badge badge-${ind.macd > 0 ? 'green' : 'red'}">${ind.macdSignal}</span>
+      </div>
+    </div>
+    <div class="indicator-row">
+      <span class="indicator-name">成交量比（20日均）</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="indicator-value" style="color:${volColor}">${ind.volSurge || '-'}x</span>
+        <span class="indicator-badge badge-${ind.volSurge >= 1.5 ? 'amber' : 'blue'}">${ind.volSignal}</span>
+      </div>
+    </div>
+    <div class="indicator-row" style="border-top:0.5px solid var(--border2);margin-top:4px;padding-top:12px;">
+      <span class="indicator-name" style="font-weight:500;color:var(--text)">綜合訊號判斷</span>
+      <span class="badge ${getBadgeClass(ind.overallSignal)}" style="font-size:12px;">${ind.overallSignal}</span>
+    </div>
+  `;
+
+  document.getElementById('analyze-btn').disabled = false;
+}
+
+async function runAnalysis() {
+  if (!currentStock || !currentIndicators) return;
+
+  const btn = document.getElementById('analyze-btn');
+  const resultDiv = document.getElementById('analysis-result');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="analyzing-spinner"></span>Claude 分析中，請稍候...';
+  resultDiv.style.display = 'none';
+
+  const ind = currentIndicators;
+  const payload = {
+    ticker: currentStock.code,
+    price: ind.price,
+    rsi: ind.rsi6,
+    signal: `手動分析-${ind.overallSignal}`,
+    time: ind.date,
+    extra: `均線：${ind.goldenCross ? '黃金交叉' : '死亡交叉'}，MACD：${ind.macd}，成交量比：${ind.volSurge}x`
+  };
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      resultDiv.style.display = 'block';
+      resultDiv.className = 'analysis-result success';
+      resultDiv.innerHTML = `✅ 分析請求已發送！\n\nClaude AI 正在分析以下資料：\n股票：${currentStock.code} ${currentStock.name}\n價格：${ind.price}\nRSI：${ind.rsi6}（${ind.rsiSignal}）\n均線：${ind.goldenCross ? '黃金交叉' : '死亡交叉'}\nMACD：${ind.macd}（${ind.macdSignal}）\n成交量：${ind.volSurge}x（${ind.volSignal}）\n綜合訊號：${ind.overallSignal}\n\n📱 分析結果將在幾秒內發送到 Telegram！`;
+      btn.innerHTML = '✅ 已發送！再次分析';
+    } else {
+      throw new Error('發送失敗');
     }
   } catch(e) {
-    console.log('fetchPrice error:', e);
+    resultDiv.style.display = 'block';
+    resultDiv.className = 'analysis-result error';
+    resultDiv.innerHTML = `❌ 發送失敗：${e.message}`;
+    btn.innerHTML = '🤖 Claude AI 即時分析 → Telegram';
   }
-  return null;
+
+  btn.disabled = false;
+}
+
+function closeModal(event) {
+  if (!event || event.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+}
+
+function getBadgeClass(signal) {
+  if (!signal) return 'badge-blue';
+  if (signal.includes('進場')) return 'badge-green';
+  if (signal.includes('出場')) return 'badge-red';
+  if (signal.includes('趨勢') || signal.includes('黃金')) return 'badge-blue';
+  if (signal.includes('風險') || signal.includes('死亡')) return 'badge-amber';
+  return 'badge-purple';
+}
+
+function getRsiColor(rsi) {
+  if (!rsi || isNaN(rsi)) return '#94a3b8';
+  if (rsi > 70) return '#fc8181';
+  if (rsi < 30) return '#48bb78';
+  return '#63b3ed';
 }
 
 async function loadPrices() {
@@ -217,15 +480,20 @@ async function loadPrices() {
 
   for (const stock of WATCH_STOCKS) {
     const card = document.getElementById(`card-${stock.code}`);
-    const result = await fetchPrice(stock.code);
+    const rawData = await fetchPrice(stock.code);
 
-    if (result && result.price) {
-      const { price, prev, high, low, date } = result;
-      const change = prev ? (price - prev) : 0;
+    if (rawData && rawData.length > 0) {
+      const latest = rawData[rawData.length - 1];
+      const prev = rawData.length > 1 ? rawData[rawData.length - 2].close : latest.close;
+      const price = latest.close;
+      const change = price - prev;
       const changePct = prev ? ((change / prev) * 100) : 0;
       const changeClass = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
       const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '－';
 
+      priceCache[stock.code] = { rawData, price };
+
+      card.onclick = () => openStockModal(stock);
       card.innerHTML = `
         <div style="margin-bottom:4px;"><span class="stock-code">${stock.code}</span></div>
         <div class="stock-name">${stock.name}</div>
@@ -234,8 +502,9 @@ async function loadPrices() {
           ${changeSymbol} ${Math.abs(change).toFixed(2)}
           <span style="font-size:11px">(${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)</span>
         </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${high.toFixed(2)} · L ${low.toFixed(2)}</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px;">${date} ${open ? '即時' : '收盤'}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${latest.max.toFixed(2)} · L ${latest.min.toFixed(2)}</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px;">${latest.date} ${open ? '即時' : '收盤'}</div>
+        <div class="analyze-hint">點擊 AI 分析 →</div>
       `;
     } else {
       card.innerHTML = `
@@ -248,22 +517,6 @@ async function loadPrices() {
 
   const now = new Date();
   document.getElementById('last-update').textContent = `最後更新：${now.toLocaleTimeString('zh-TW')}`;
-}
-
-function getBadgeClass(signal) {
-  if (!signal) return 'badge-blue';
-  if (signal.includes('進場')) return 'badge-green';
-  if (signal.includes('出場')) return 'badge-red';
-  if (signal.includes('趨勢') || signal.includes('黃金')) return 'badge-blue';
-  if (signal.includes('風險') || signal.includes('死亡')) return 'badge-amber';
-  return 'badge-purple';
-}
-
-function getRsiColor(rsi) {
-  if (!rsi || isNaN(rsi)) return '#94a3b8';
-  if (rsi > 70) return '#fc8181';
-  if (rsi < 30) return '#48bb78';
-  return '#63b3ed';
 }
 
 function filterStock(ticker) {

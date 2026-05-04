@@ -275,7 +275,8 @@ function isMarketOpen() {
 
 async function fetchTWSEPrice(code) {
   try {
-    const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${code}.tw&json=1&delay=0&_=${Date.now()}`;
+    const target = encodeURIComponent(`https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${code}.tw&json=1&delay=0&_=${Date.now()}`);
+    const url = `https://corsproxy.io/?${target}`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.msgArray && data.msgArray.length > 0) {
@@ -292,7 +293,8 @@ async function fetchTWSEPrice(code) {
 
 async function fetchOTCPrice(code) {
   try {
-    const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${code}.tw&json=1&delay=0&_=${Date.now()}`;
+    const target = encodeURIComponent(`https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${code}.tw&json=1&delay=0&_=${Date.now()}`);
+    const url = `https://corsproxy.io/?${target}`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.msgArray && data.msgArray.length > 0) {

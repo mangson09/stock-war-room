@@ -6,177 +6,78 @@
 <title>股市戰情室儀表板</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap');
-
   :root {
-    --bg: #0a0e1a;
-    --bg2: #111827;
-    --bg3: #1a2235;
-    --border: rgba(99, 179, 237, 0.15);
-    --border2: rgba(99, 179, 237, 0.3);
-    --accent: #63b3ed;
-    --accent2: #4fd1c5;
-    --text: #e2e8f0;
-    --text2: #94a3b8;
-    --green: #48bb78;
-    --red: #fc8181;
-    --amber: #f6ad55;
-    --purple: #b794f4;
+    --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235;
+    --border:rgba(99,179,237,0.15); --border2:rgba(99,179,237,0.3);
+    --accent:#63b3ed; --accent2:#4fd1c5;
+    --text:#e2e8f0; --text2:#94a3b8;
+    --green:#48bb78; --red:#fc8181; --amber:#f6ad55; --purple:#b794f4;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px;
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 0.5px solid var(--border2);
-  }
-
-  .header-left { display: flex; align-items: center; gap: 16px; }
-
-  .logo {
-    width: 48px; height: 48px;
-    background: linear-gradient(135deg, #1a365d, #2b6cb0);
-    border-radius: 12px;
-    border: 1px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-  }
-
-  .title h1 { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
-  .title p { font-size: 12px; color: var(--text2); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
-
-  .status-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); font-family: 'Share Tech Mono', monospace; }
-
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .metric-card {
-    background: var(--bg2);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .metric-card.blue::before { background: var(--accent); }
-  .metric-card.green::before { background: var(--green); }
-  .metric-card.red::before { background: var(--red); }
-  .metric-card.amber::before { background: var(--amber); }
-
-  .metric-label { font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .metric-value { font-size: 28px; font-weight: 700; font-family: 'Share Tech Mono', monospace; color: var(--text); }
-  .metric-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
-
-  .section {
-    background: var(--bg2);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .section-title { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-
-  .refresh-btn {
-    background: transparent;
-    border: 0.5px solid var(--border2);
-    color: var(--text2);
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: 'Noto Sans TC', sans-serif;
-    transition: all 0.2s;
-  }
-
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  .stocks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-  }
-
-  .stock-card {
-    background: var(--bg3);
-    border: 0.5px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    transition: border-color 0.2s;
-  }
-
-  .stock-card:hover { border-color: var(--border2); }
-
-  .stock-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .stock-code { font-family: 'Share Tech Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); }
-  .stock-name { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
-  .stock-price { font-family: 'Share Tech Mono', monospace; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-
-  .stock-change { font-family: 'Share Tech Mono', monospace; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .change-up { color: var(--red); }
-  .change-down { color: var(--green); }
-  .change-flat { color: var(--text2); }
-
-  .market-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; }
-  .market-open { background: rgba(72,187,120,0.15); color: var(--green); border: 0.5px solid rgba(72,187,120,0.3); }
-  .market-closed { background: rgba(148,163,184,0.15); color: var(--text2); border: 0.5px solid rgba(148,163,184,0.3); }
-
-  .price-loading { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text2); animation: blink 1s infinite; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 8px 12px; color: var(--text2); font-weight: 500; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 0.5px solid var(--border); }
-  td { padding: 12px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(99,179,237,0.03); }
-
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-  .badge-green { background: rgba(72,187,120,0.15); color: var(--green); border: 0.5px solid rgba(72,187,120,0.3); }
-  .badge-red { background: rgba(252,129,129,0.15); color: var(--red); border: 0.5px solid rgba(252,129,129,0.3); }
-  .badge-amber { background: rgba(246,173,85,0.15); color: var(--amber); border: 0.5px solid rgba(246,173,85,0.3); }
-  .badge-blue { background: rgba(99,179,237,0.15); color: var(--accent); border: 0.5px solid rgba(99,179,237,0.3); }
-  .badge-purple { background: rgba(183,148,244,0.15); color: var(--purple); border: 0.5px solid rgba(183,148,244,0.3); }
-
-  .analysis-text { font-size: 12px; color: var(--text2); line-height: 1.6; max-width: 400px; white-space: pre-wrap; word-break: break-word; }
-  .ticker { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: 500; color: var(--text); }
-  .price-text { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--accent2); }
-  .time-text { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text2); }
-
-  .loading { text-align: center; padding: 40px; color: var(--text2); font-size: 13px; }
-  .empty { text-align: center; padding: 40px; color: var(--text2); font-size: 13px; }
-  .error-msg { text-align: center; padding: 20px; color: var(--red); font-size: 13px; background: rgba(252,129,129,0.05); border-radius: 8px; border: 0.5px solid rgba(252,129,129,0.2); }
-
-  .rsi-bar { display: flex; align-items: center; gap: 8px; }
-  .rsi-track { width: 60px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-  .rsi-fill { height: 100%; border-radius: 2px; }
-
-  .stock-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .filter-btn { background: transparent; border: 0.5px solid var(--border); color: var(--text2); padding: 4px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s; }
-  .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(99,179,237,0.08); }
-
-  .footer { margin-top: 24px; text-align: center; font-size: 11px; color: var(--text2); font-family: 'Share Tech Mono', monospace; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px;}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:0.5px solid var(--border2);}
+  .header-left{display:flex;align-items:center;gap:16px;}
+  .logo{width:48px;height:48px;background:linear-gradient(135deg,#1a365d,#2b6cb0);border-radius:12px;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .title h1{font-size:22px;font-weight:700;color:var(--accent);letter-spacing:2px;}
+  .title p{font-size:12px;color:var(--text2);font-family:'Share Tech Mono',monospace;margin-top:2px;}
+  .status-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);font-family:'Share Tech Mono',monospace;}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+  .metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+  .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .metric-card.blue::before{background:var(--accent);}
+  .metric-card.green::before{background:var(--green);}
+  .metric-card.red::before{background:var(--red);}
+  .metric-card.amber::before{background:var(--amber);}
+  .metric-label{font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .metric-value{font-size:28px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--text);}
+  .metric-sub{font-size:11px;color:var(--text2);margin-top:4px;}
+  .section{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .section-title{font-size:13px;font-weight:500;color:var(--accent);letter-spacing:1px;text-transform:uppercase;}
+  .refresh-btn{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;}
+  .refresh-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .stocks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+  .stock-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color 0.2s;}
+  .stock-card:hover{border-color:var(--border2);}
+  .stock-code{font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:var(--accent);}
+  .stock-name{font-size:12px;color:var(--text2);margin-bottom:10px;}
+  .stock-price{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
+  .stock-change{font-family:'Share Tech Mono',monospace;font-size:13px;display:flex;align-items:center;gap:8px;}
+  .change-up{color:var(--red);}
+  .change-down{color:var(--green);}
+  .change-flat{color:var(--text2);}
+  .market-status{font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Share Tech Mono',monospace;}
+  .market-open{background:rgba(72,187,120,0.15);color:var(--green);border:0.5px solid rgba(72,187,120,0.3);}
+  .market-closed{background:rgba(148,163,184,0.15);color:var(--text2);border:0.5px solid rgba(148,163,184,0.3);}
+  .price-loading{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text2);animation:blink 1s infinite;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;padding:8px 12px;color:var(--text2);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:0.5px solid var(--border);}
+  td{padding:12px;border-bottom:0.5px solid var(--border);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(99,179,237,0.03);}
+  .badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap;}
+  .badge-green{background:rgba(72,187,120,0.15);color:var(--green);border:0.5px solid rgba(72,187,120,0.3);}
+  .badge-red{background:rgba(252,129,129,0.15);color:var(--red);border:0.5px solid rgba(252,129,129,0.3);}
+  .badge-amber{background:rgba(246,173,85,0.15);color:var(--amber);border:0.5px solid rgba(246,173,85,0.3);}
+  .badge-blue{background:rgba(99,179,237,0.15);color:var(--accent);border:0.5px solid rgba(99,179,237,0.3);}
+  .badge-purple{background:rgba(183,148,244,0.15);color:var(--purple);border:0.5px solid rgba(183,148,244,0.3);}
+  .analysis-text{font-size:12px;color:var(--text2);line-height:1.6;max-width:400px;white-space:pre-wrap;word-break:break-word;}
+  .ticker{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
+  .price-text{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2);}
+  .time-text{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);}
+  .loading{text-align:center;padding:40px;color:var(--text2);font-size:13px;}
+  .empty{text-align:center;padding:40px;color:var(--text2);font-size:13px;}
+  .error-msg{text-align:center;padding:20px;color:var(--red);font-size:13px;background:rgba(252,129,129,0.05);border-radius:8px;border:0.5px solid rgba(252,129,129,0.2);}
+  .rsi-bar{display:flex;align-items:center;gap:8px;}
+  .rsi-track{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+  .rsi-fill{height:100%;border-radius:2px;}
+  .stock-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .filter-btn{background:transparent;border:0.5px solid var(--border);color:var(--text2);padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;}
+  .filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(99,179,237,0.08);}
+  .footer{margin-top:24px;text-align:center;font-size:11px;color:var(--text2);font-family:'Share Tech Mono',monospace;}
 </style>
 </head>
 <body>
@@ -227,7 +128,7 @@
     </div>
   </div>
   <div class="stocks-grid" id="stocks-grid">
-    <div class="loading">載入即時股價中...</div>
+    <div class="loading">載入股價中...</div>
   </div>
 </div>
 
@@ -245,7 +146,7 @@
 </div>
 
 <div class="footer">
-  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：TWSE + Google Sheets + Claude AI
+  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：FinMind + Google Sheets + Claude AI
 </div>
 
 <script>
@@ -273,66 +174,30 @@ function isMarketOpen() {
   return day >= 1 && day <= 5 && totalMin >= 540 && totalMin <= 810;
 }
 
-async function fetchTWSEPrice(code) {
+async function fetchPrice(code) {
   try {
     const today = new Date();
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 7);
+    startDate.setDate(today.getDate() - 10);
     const start = startDate.toISOString().split('T')[0];
     const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${code}&start_date=${start}&token=`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.data && data.data.length > 0) {
       const latest = data.data[data.data.length - 1];
-      const price = latest.close;
-      const prev = data.data.length > 1 ? data.data[data.data.length - 2].close : price;
-      const high = latest.max;
-      const low = latest.min;
-      const open = latest.open;
-      const date = latest.date;
-      if (price && price > 0) return { price, prev, high, low, open, date };
+      const prev = data.data.length > 1 ? data.data[data.data.length - 2].close : latest.close;
+      return {
+        price: latest.close,
+        prev: prev,
+        high: latest.max,
+        low: latest.min,
+        open: latest.open,
+        date: latest.date
+      };
     }
-  } catch(e) {}
-  return null;
-}
-
-async function fetchOTCPrice(code) {
-  try {
-    const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 7);
-    const start = startDate.toISOString().split('T')[0];
-    const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${code}&start_date=${start}&token=`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.data && data.data.length > 0) {
-      const latest = data.data[data.data.length - 1];
-      const price = latest.close;
-      const prev = data.data.length > 1 ? data.data[data.data.length - 2].close : price;
-      const high = latest.max;
-      const low = latest.min;
-      const open = latest.open;
-      const date = latest.date;
-      if (price && price > 0) return { price, prev, high, low, open, date };
-    }
-  } catch(e) {}
-  return null;
-}
-
-async function getPrice(code) {
-  try {
-    const url = `https://query2.finance.yahoo.com/v8/finance/chart/${code}.TW?interval=1d&range=5d&corsDomain=finance.yahoo.com`;
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    const data = await res.json();
-    const meta = data.chart.result[0].meta;
-    const price = meta.regularMarketPrice;
-    const prev = meta.chartPreviousClose;
-    const high = meta.regularMarketDayHigh;
-    const low = meta.regularMarketDayLow;
-    if (price) return { price, prev, high, low };
-  } catch(e) {}
+  } catch(e) {
+    console.log('fetchPrice error:', e);
+  }
   return null;
 }
 
@@ -344,7 +209,7 @@ async function loadPrices() {
   const grid = document.getElementById('stocks-grid');
   grid.innerHTML = WATCH_STOCKS.map(s =>
     `<div class="stock-card" id="card-${s.code}">
-      <div class="stock-card-header"><span class="stock-code">${s.code}</span></div>
+      <div style="margin-bottom:4px;"><span class="stock-code">${s.code}</span></div>
       <div class="stock-name">${s.name}</div>
       <div class="price-loading">載入中...</div>
     </div>`
@@ -352,31 +217,31 @@ async function loadPrices() {
 
   for (const stock of WATCH_STOCKS) {
     const card = document.getElementById(`card-${stock.code}`);
-    const result = await getPrice(stock.code);
+    const result = await fetchPrice(stock.code);
 
-    if (result) {
-      const { price, prev, high, low } = result;
+    if (result && result.price) {
+      const { price, prev, high, low, date } = result;
       const change = prev ? (price - prev) : 0;
       const changePct = prev ? ((change / prev) * 100) : 0;
       const changeClass = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
       const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '－';
 
       card.innerHTML = `
-        <div class="stock-card-header"><span class="stock-code">${stock.code}</span></div>
+        <div style="margin-bottom:4px;"><span class="stock-code">${stock.code}</span></div>
         <div class="stock-name">${stock.name}</div>
         <div class="stock-price">${price.toFixed(2)}</div>
         <div class="stock-change ${changeClass}">
           ${changeSymbol} ${Math.abs(change).toFixed(2)}
           <span style="font-size:11px">(${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)</span>
         </div>
-        ${(high && low) ? `<div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${high.toFixed(2)} · L ${low.toFixed(2)}</div>` : ''}
-        <div style="font-size:10px;color:var(--text2);margin-top:4px;">${result.date || ''} 收盤</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${high.toFixed(2)} · L ${low.toFixed(2)}</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px;">${date} ${open ? '即時' : '收盤'}</div>
       `;
     } else {
       card.innerHTML = `
-        <div class="stock-card-header"><span class="stock-code">${stock.code}</span></div>
+        <div style="margin-bottom:4px;"><span class="stock-code">${stock.code}</span></div>
         <div class="stock-name">${stock.name}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:8px;">${open ? '暫無報價' : '休市中'}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:8px;">資料載入失敗</div>
       `;
     }
   }
@@ -493,7 +358,7 @@ async function loadAlerts() {
     renderTable(allData);
   } catch (err) {
     document.getElementById('table-container').innerHTML =
-      `<div class="error-msg">警報記錄載入失敗，請確認 Google Sheets 已設定為公開可讀取<br><small>${err.message}</small></div>`;
+      `<div class="error-msg">警報記錄載入失敗<br><small>${err.message}</small></div>`;
   }
 }
 

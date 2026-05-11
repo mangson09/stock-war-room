@@ -3,624 +3,981 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>股市戰情室儀表板</title>
+<title>股市戰情室 v5.2H</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap');
-  :root {
-    --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235;
-    --border:rgba(99,179,237,0.15); --border2:rgba(99,179,237,0.3);
-    --accent:#63b3ed; --accent2:#4fd1c5;
-    --text:#e2e8f0; --text2:#94a3b8;
-    --green:#48bb78; --red:#fc8181; --amber:#f6ad55; --purple:#b794f4;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px;}
-  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:0.5px solid var(--border2);}
-  .header-left{display:flex;align-items:center;gap:16px;}
-  .logo{width:48px;height:48px;background:linear-gradient(135deg,#1a365d,#2b6cb0);border-radius:12px;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;}
-  .title h1{font-size:22px;font-weight:700;color:var(--accent);letter-spacing:2px;}
-  .title p{font-size:12px;color:var(--text2);font-family:'Share Tech Mono',monospace;margin-top:2px;}
-  .status-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);font-family:'Share Tech Mono',monospace;}
-  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
-  .metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
-  .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-  .metric-card.blue::before{background:var(--accent);}
-  .metric-card.green::before{background:var(--green);}
-  .metric-card.red::before{background:var(--red);}
-  .metric-card.amber::before{background:var(--amber);}
-  .metric-label{font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-  .metric-value{font-size:28px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--text);}
-  .metric-sub{font-size:11px;color:var(--text2);margin-top:4px;}
-  .section{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
-  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-  .section-title{font-size:13px;font-weight:500;color:var(--accent);letter-spacing:1px;text-transform:uppercase;}
-  .refresh-btn{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;}
-  .refresh-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .stocks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
-  .stock-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;transition:all 0.2s;cursor:pointer;position:relative;}
-  .stock-card:hover{border-color:var(--accent);background:#1e2d45;}
-  .stock-card .analyze-hint{position:absolute;bottom:8px;right:10px;font-size:10px;color:var(--accent);opacity:0;transition:opacity 0.2s;font-family:'Share Tech Mono',monospace;}
-  .stock-card:hover .analyze-hint{opacity:1;}
-  .stock-code{font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:var(--accent);}
-  .stock-name{font-size:12px;color:var(--text2);margin-bottom:10px;}
-  .stock-price{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
-  .stock-change{font-family:'Share Tech Mono',monospace;font-size:13px;display:flex;align-items:center;gap:8px;}
-  .change-up{color:var(--red);}
-  .change-down{color:var(--green);}
-  .change-flat{color:var(--text2);}
-  .market-status{font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Share Tech Mono',monospace;}
-  .market-open{background:rgba(72,187,120,0.15);color:var(--green);border:0.5px solid rgba(72,187,120,0.3);}
-  .market-closed{background:rgba(148,163,184,0.15);color:var(--text2);border:0.5px solid rgba(148,163,184,0.3);}
-  .price-loading{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text2);animation:blink 1s infinite;}
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 
-  /* 分析彈出視窗 */
-  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
-  .modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:560px;max-height:80vh;overflow-y:auto;}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-  .modal-title{font-size:16px;font-weight:700;color:var(--accent);}
-  .modal-close{background:transparent;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px;}
-  .modal-close:hover{color:var(--text);}
-  .modal-info{background:var(--bg3);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .modal-info-item{font-size:12px;}
-  .modal-info-label{color:var(--text2);margin-bottom:2px;}
-  .modal-info-value{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
-  .modal-indicators{margin-bottom:16px;}
-  .indicator-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);}
-  .indicator-row:last-child{border-bottom:none;}
-  .indicator-name{font-size:12px;color:var(--text2);}
-  .indicator-value{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:500;}
-  .indicator-badge{font-size:10px;padding:2px 8px;border-radius:4px;}
-  .analyze-btn{width:100%;padding:12px;background:linear-gradient(135deg,#1a365d,#2b6cb0);border:1px solid var(--accent);color:var(--accent);border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;margin-bottom:12px;}
-  .analyze-btn:hover{background:linear-gradient(135deg,#2b6cb0,#3182ce);}
-  .analyze-btn:disabled{opacity:0.5;cursor:not-allowed;}
-  .analyzing-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle;}
-  .analysis-result{background:var(--bg3);border-radius:8px;padding:16px;font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-top:12px;}
-  .analysis-result.success{border:0.5px solid rgba(99,179,237,0.3);}
-  .analysis-result.error{border:0.5px solid rgba(252,129,129,0.3);color:var(--red);}
-  .send-tg-btn{width:100%;padding:10px;background:transparent;border:0.5px solid var(--accent2);color:var(--accent2);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;margin-top:8px;}
-  .send-tg-btn:hover{background:rgba(79,209,197,0.1);}
+:root {
+  --bg: #0a0e1a;
+  --bg2: #0f1525;
+  --bg3: #141c30;
+  --card: #111827;
+  --border: #1e2d4a;
+  --border2: #243552;
+  --accent: #3b82f6;
+  --accent2: #1d4ed8;
+  --green: #10b981;
+  --green2: #059669;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Noto Sans TC', sans-serif;
+}
 
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;padding:8px 12px;color:var(--text2);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:0.5px solid var(--border);}
-  td{padding:12px;border-bottom:0.5px solid var(--border);vertical-align:top;}
-  tr:last-child td{border-bottom:none;}
-  tr:hover td{background:rgba(99,179,237,0.03);}
-  .badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap;}
-  .badge-green{background:rgba(72,187,120,0.15);color:var(--green);border:0.5px solid rgba(72,187,120,0.3);}
-  .badge-red{background:rgba(252,129,129,0.15);color:var(--red);border:0.5px solid rgba(252,129,129,0.3);}
-  .badge-amber{background:rgba(246,173,85,0.15);color:var(--amber);border:0.5px solid rgba(246,173,85,0.3);}
-  .badge-blue{background:rgba(99,179,237,0.15);color:var(--accent);border:0.5px solid rgba(99,179,237,0.3);}
-  .badge-purple{background:rgba(183,148,244,0.15);color:var(--purple);border:0.5px solid rgba(183,148,244,0.3);}
-  .analysis-text{font-size:12px;color:var(--text2);line-height:1.6;max-width:400px;white-space:pre-wrap;word-break:break-word;}
-  .ticker{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:500;color:var(--text);}
-  .price-text{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2);}
-  .time-text{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);}
-  .loading{text-align:center;padding:40px;color:var(--text2);font-size:13px;}
-  .empty{text-align:center;padding:40px;color:var(--text2);font-size:13px;}
-  .error-msg{text-align:center;padding:20px;color:var(--red);font-size:13px;background:rgba(252,129,129,0.05);border-radius:8px;border:0.5px solid rgba(252,129,129,0.2);}
-  .rsi-bar{display:flex;align-items:center;gap:8px;}
-  .rsi-track{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-  .rsi-fill{height:100%;border-radius:2px;}
-  .stock-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .filter-btn{background:transparent;border:0.5px solid var(--border);color:var(--text2);padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all 0.2s;}
-  .filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(99,179,237,0.08);}
-  .footer{margin-top:24px;text-align:center;font-size:11px;color:var(--text2);font-family:'Share Tech Mono',monospace;}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 背景網格 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+/* 頂部 Header */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  background: rgba(10,14,26,0.95);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-badge {
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.logo h1 {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.market-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+.market-open { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
+.market-closed { border-color: var(--text3); color: var(--text3); background: rgba(100,116,139,0.08); }
+.update-time { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+.refresh-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--sans);
+}
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 統計列 */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px 0;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.stat-card.blue::before { background: var(--accent); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.red::before { background: var(--red); }
+.stat-card.yellow::before { background: var(--yellow); }
+.stat-label { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; margin-bottom: 6px; }
+.stat-num { font-family: var(--mono); font-size: 24px; font-weight: 700; }
+.stat-card.blue .stat-num { color: var(--accent); }
+.stat-card.green .stat-num { color: var(--green); }
+.stat-card.red .stat-num { color: var(--red); }
+.stat-card.yellow .stat-num { color: var(--yellow); }
+
+/* 股票網格 */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.alert-badge {
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--mono);
+}
+
+.stocks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+/* 股票卡片 */
+.stock-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s;
+  overflow: hidden;
+  position: relative;
+}
+.stock-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59,130,246,0.12);
+}
+.stock-card.has-alert { border-color: rgba(59,130,246,0.4); }
+
+.card-top {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.stock-code {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stock-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.alert-dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.price { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--text); }
+.change { font-family: var(--mono); font-size: 12px; }
+.change.up { color: var(--red); }
+.change.down { color: var(--green); }
+.change.flat { color: var(--text3); }
+
+/* 指標區 */
+.card-indicators {
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.ind-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.ind-label { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.ind-val { font-size: 11px; font-family: var(--mono); font-weight: 700; }
+.ind-val.bull { color: var(--red); }
+.ind-val.bear { color: var(--green); }
+.ind-val.neutral { color: var(--text2); }
+
+/* 評分條 */
+.score-section {
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--border);
+}
+.score-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.score-label { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: 0.5px; }
+.score-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.score-bar-bg {
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.score-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+/* 訊號標籤 */
+.signal-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.sig-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.sig-buy { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.sig-buy-star { background: rgba(16,185,129,0.25); color: #34d399; border: 1px solid rgba(16,185,129,0.5); }
+.sig-pb { background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+.sig-div { background: rgba(139,92,246,0.15); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+.sig-sell { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.sig-stop { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.sig-watch { background: rgba(100,116,139,0.15); color: var(--text3); border: 1px solid rgba(100,116,139,0.3); }
+
+/* 產業標籤 */
+.industry-tag {
+  font-size: 10px;
+  color: var(--text3);
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-bottom: 8px;
+}
+
+/* 警報記錄區 */
+.alerts-section { margin-bottom: 40px; }
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.filter-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(59,130,246,0.08);
+}
+
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: var(--bg3); }
+th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  color: var(--text3);
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  font-weight: 400;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.td-time { font-family: var(--mono); font-size: 11px; color: var(--text3); white-space: nowrap; }
+.td-ticker { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+.td-price { font-family: var(--mono); }
+.td-signal { }
+.td-analysis { font-size: 11px; color: var(--text2); line-height: 1.5; max-width: 400px; }
+
+/* 分析 Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-family: var(--mono); font-size: 14px; color: var(--text); }
+.modal-close {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 18px; line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 16px 20px; }
+.modal-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.info-item {
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.info-item-label { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-bottom: 2px; }
+.info-item-val { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+
+.score-display {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.score-display-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.score-display-label { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.score-display-num { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+.score-display-bar-bg {
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.score-display-bar { height: 100%; border-radius: 3px; }
+
+.analyze-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--sans);
+  margin-bottom: 12px;
+}
+.analyze-btn:hover { background: var(--accent2); }
+.analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.analysis-result {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text2);
+  white-space: pre-wrap;
+  margin-top: 8px;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: var(--text3);
+  font-size: 13px;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 11px;
+  color: var(--text3);
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .stocks-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .stocks-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo">📡</div>
-    <div class="title">
-      <h1>股市戰情室</h1>
-      <p>STOCK WAR ROOM · AI POWERED</p>
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-badge">v5.2H</span>
+        <h1>股市戰情室</h1>
+      </div>
+      <div class="header-right">
+        <span class="market-badge" id="market-badge">休市中</span>
+        <span class="update-time" id="update-time">—</span>
+        <button class="refresh-btn" onclick="loadAll()">↻ 更新</button>
+      </div>
     </div>
   </div>
-  <div class="status-bar">
-    <div class="status-dot"></div>
-    <span id="last-update">載入中...</span>
-  </div>
-</div>
+</header>
 
-<div class="metrics">
-  <div class="metric-card blue">
-    <div class="metric-label">總警報次數</div>
-    <div class="metric-value" id="total-count">-</div>
-    <div class="metric-sub">歷史累計</div>
-  </div>
-  <div class="metric-card green">
-    <div class="metric-label">強力進場</div>
-    <div class="metric-value" id="buy-count">-</div>
-    <div class="metric-sub">進場訊號</div>
-  </div>
-  <div class="metric-card red">
-    <div class="metric-label">強力出場</div>
-    <div class="metric-value" id="sell-count">-</div>
-    <div class="metric-sub">出場訊號</div>
-  </div>
-  <div class="metric-card amber">
-    <div class="metric-label">趨勢 / 風險</div>
-    <div class="metric-value" id="trend-count">-</div>
-    <div class="metric-sub">趨勢訊號</div>
-  </div>
-</div>
+<div class="container">
 
-<div class="section">
+  <!-- 統計列 -->
+  <div class="stats-row">
+    <div class="stat-card blue">
+      <div class="stat-label">TOTAL ALERTS</div>
+      <div class="stat-num" id="stat-total">—</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">進場訊號</div>
+      <div class="stat-num" id="stat-buy">—</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">出場訊號</div>
+      <div class="stat-num" id="stat-sell">—</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">趨勢訊號</div>
+      <div class="stat-num" id="stat-trend">—</div>
+    </div>
+  </div>
+
+  <!-- 股票網格 -->
   <div class="section-header">
-    <span class="section-title">監控股票 · 即時行情</span>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span id="market-status-badge" class="market-status market-closed">休市中</span>
-      <button class="refresh-btn" onclick="loadPrices()">更新價格</button>
-    </div>
+    <span class="section-title">// 監控清單</span>
+    <span class="alert-dot" style="display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;"></span>
   </div>
-  <div style="font-size:11px;color:var(--text2);margin-bottom:12px;">點擊股票卡片可手動觸發 Claude AI 分析</div>
+
   <div class="stocks-grid" id="stocks-grid">
-    <div class="loading">載入股價中...</div>
+    <!-- 由 JS 生成 -->
   </div>
-</div>
 
-<div class="section">
-  <div class="section-header">
-    <span class="section-title">警報記錄</span>
-    <button class="refresh-btn" onclick="loadAlerts()">重新整理</button>
+  <!-- 警報記錄 -->
+  <div class="alerts-section">
+    <div class="section-header">
+      <span class="section-title">// 警報記錄</span>
+      <button class="refresh-btn" onclick="loadAlerts()">重新整理</button>
+    </div>
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" onclick="filterStock('全部')">全部</button>
+    </div>
+    <div id="table-container">
+      <div style="padding:40px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:12px;">載入中...</div>
+    </div>
   </div>
-  <div class="stock-filter" id="stock-filter">
-    <button class="filter-btn active" onclick="filterStock('全部')">全部</button>
-  </div>
-  <div id="table-container">
-    <div class="loading">載入資料中...</div>
-  </div>
+
 </div>
 
 <div class="footer">
-  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 數據來源：FinMind + Google Sheets + Claude AI
+  ⚠️ 以上資訊僅供參考，最終交易決策請自行負責 · 股市戰情室 v5.2H · 資料來源：FinMind + Google Sheets + Claude AI
 </div>
 
-<!-- 分析彈出視窗 -->
-<div class="modal-overlay" id="modal-overlay" style="display:none;" onclick="closeModal(event)">
+<!-- Modal -->
+<div id="modal-overlay" style="display:none;" onclick="handleOverlayClick(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
       <span class="modal-title" id="modal-title">股票分析</span>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-info" id="modal-info"></div>
-    <div class="modal-indicators" id="modal-indicators"></div>
-    <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()">
-      🤖 Claude AI 即時分析 → Telegram
-    </button>
-    <div id="analysis-result" style="display:none;"></div>
+    <div class="modal-body">
+      <div class="modal-info" id="modal-info"></div>
+      <div class="score-display" id="modal-score"></div>
+      <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()">
+        🤖 Claude AI 即時分析 → Telegram
+      </button>
+      <div id="analysis-result" style="display:none;"></div>
+    </div>
   </div>
 </div>
 
 <script>
-const SHEET_ID = '1YLdYoXehvpHA_PT5wT-qw2qnPFY1jPA4uape1HCVHEc';
+// ── 設定 ──────────────────────────────────────
+const SHEET_ID   = '1YLdYoXehvpHA_PT5wT-qw2qnPFY1jPA4uape1HCVHEc';
 const SHEET_NAME = 'Sheet1';
-const WEBHOOK_URL = 'https://hook.us2.make.com/7giwak8asrrvcpbwqfqpncf16cp8yhmz';
-const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+const WEBHOOK    = 'https://hook.us2.make.com/7giwak8asrrvcpbwqfqpncf16cp8yhmz';
+const SHEET_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
-const WATCH_STOCKS = [
-  { code: '3715', name: '定穎投控' },
-  { code: '6239', name: '力成' },
-  { code: '6456', name: 'GIS-KY' },
-  { code: '1815', name: '富喬' },
-  { code: '3388', name: '崇越電' },
-  { code: '4772', name: '台特化' }
+// ── 新監控名單（8檔）──────────────────────────
+const STOCKS = [
+  { code:'3563', name:'牧德',       industry:'PCB/半導體AOI檢測設備',   alert:false, sector:'設備' },
+  { code:'6456', name:'GIS-KY',     industry:'觸控顯示模組/AR光學轉型',  alert:false, sector:'顯示' },
+  { code:'6672', name:'騰輝電子-KY',industry:'高頻高速PCB特殊材料',      alert:false, sector:'PCB材料' },
+  { code:'6706', name:'惠特',       industry:'電子零組件/連接器',        alert:false, sector:'零組件' },
+  { code:'3388', name:'崇越電',     industry:'IC通路/半導體材料代理',    alert:true,  sector:'通路' },
+  { code:'4772', name:'台特化',     industry:'半導體精密化學材料及特氣', alert:true,  sector:'化材' },
+  { code:'5351', name:'鈺創',       industry:'半導體/記憶體IC設計',      alert:true,  sector:'IC設計' },
+  { code:'6761', name:'穩得',       industry:'EMC線路保護元件/認證測試', alert:true,  sector:'元件' },
 ];
 
-let allData = [];
+// ── 狀態 ──────────────────────────────────────
+let priceCache   = {};
+let alertsData   = [];
 let currentFilter = '全部';
-let priceCache = {};
-let currentStock = null;
-let currentIndicators = null;
+let currentStock  = null;
 
+// ── 市場時間 ──────────────────────────────────
 function isMarketOpen() {
-  const now = new Date();
-  const tw = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+  const tw  = new Date(new Date().toLocaleString('en-US', { timeZone:'Asia/Taipei' }));
   const day = tw.getDay();
-  const totalMin = tw.getHours() * 60 + tw.getMinutes();
-  return day >= 1 && day <= 5 && totalMin >= 540 && totalMin <= 810;
+  const min = tw.getHours()*60 + tw.getMinutes();
+  return day >= 1 && day <= 5 && min >= 540 && min <= 810;
 }
 
+function updateMarketStatus() {
+  const badge = document.getElementById('market-badge');
+  if (isMarketOpen()) {
+    badge.textContent = '交易中';
+    badge.className = 'market-badge market-open';
+  } else {
+    badge.textContent = '休市中';
+    badge.className = 'market-badge market-closed';
+  }
+}
+
+// ── FinMind 股價 ──────────────────────────────
 async function fetchPrice(code) {
   try {
     const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 40);
-    const start = startDate.toISOString().split('T')[0];
-    const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${code}&start_date=${start}&token=`;
-    const res = await fetch(url);
+    const start = new Date(today);
+    start.setDate(today.getDate() - 10);
+    const startStr = start.toISOString().split('T')[0];
+    const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${code}&start_date=${startStr}&token=`;
+    const res  = await fetch(url);
     const data = await res.json();
     if (data.data && data.data.length > 0) {
-      return data.data;
+      const arr  = data.data;
+      const last = arr[arr.length - 1];
+      const prev = arr.length > 1 ? arr[arr.length - 2].close : last.close;
+      return {
+        price: last.close,
+        prev,
+        high:  last.max,
+        low:   last.min,
+        open:  last.open,
+        vol:   last.Trading_Volume,
+        date:  last.date,
+      };
     }
-  } catch(e) {}
+  } catch(e) { /* ignore */ }
   return null;
 }
 
-function calcRSI(closes, period) {
-  if (closes.length < period + 1) return null;
-  let gains = 0, losses = 0;
-  for (let i = closes.length - period; i < closes.length; i++) {
-    const diff = closes[i] - closes[i-1];
-    if (diff > 0) gains += diff;
-    else losses += Math.abs(diff);
-  }
-  const avgGain = gains / period;
-  const avgLoss = losses / period;
-  if (avgLoss === 0) return 100;
-  const rs = avgGain / avgLoss;
-  return Math.round((100 - (100 / (1 + rs))) * 10) / 10;
+// ── 計算簡易指標（給 Modal 顯示）──────────────
+function calcIndicators(p) {
+  if (!p) return { rsi:'—', macd:'—', score: 0, signals:[] };
+
+  // 簡易 RSI 估算（僅供參考，以 TradingView 為主）
+  const chg = p.price - p.prev;
+  const rsiEst = chg > 0 ? Math.min(75, 50 + (chg / p.prev) * 200) :
+                            Math.max(25, 50 + (chg / p.prev) * 200);
+  const rsi = Math.round(rsiEst * 10) / 10;
+
+  // 簡易成交量比
+  const volText = p.vol ? (p.vol / 1000).toFixed(0) + 'K' : '—';
+
+  // 估算評分（簡化版，正式評分以 TradingView v5.2H 為主）
+  let score = 50;
+  if (chg > 0) score += 10;
+  if (rsi > 30 && rsi < 60) score += 10;
+  if (p.price > p.open) score += 10;
+  score = Math.min(100, Math.max(0, score));
+
+  // 訊號判斷
+  const signals = [];
+  if (rsi < 30) signals.push({ label:'DIV', cls:'sig-div' });
+  else if (chg > 0 && rsi < 55) signals.push({ label:'BUY★', cls:'sig-buy-star' });
+  else if (chg > 0) signals.push({ label:'BUY', cls:'sig-buy' });
+  if (rsi > 70) signals.push({ label:'SELL', cls:'sig-sell' });
+  if (signals.length === 0) signals.push({ label:'觀察', cls:'sig-watch' });
+
+  return { rsi, volText, score, signals, chg };
 }
 
-function calcEMA(closes, period) {
-  if (closes.length < period) return null;
-  const k = 2 / (period + 1);
-  let ema = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
-  for (let i = period; i < closes.length; i++) {
-    ema = closes[i] * k + ema * (1 - k);
-  }
-  return Math.round(ema * 100) / 100;
+// ── 建立股票卡片 ──────────────────────────────
+function renderCards() {
+  const grid = document.getElementById('stocks-grid');
+  grid.innerHTML = '';
+
+  STOCKS.forEach(s => {
+    const p    = priceCache[s.code];
+    const ind  = calcIndicators(p);
+    const chg  = p ? (p.price - p.prev) : 0;
+    const pct  = p ? ((chg / p.prev) * 100).toFixed(2) : null;
+    const chgCls = chg > 0 ? 'up' : chg < 0 ? 'down' : 'flat';
+    const chgSign = chg > 0 ? '+' : '';
+
+    // 評分顏色
+    const scoreColor = ind.score >= 75 ? '#10b981' : ind.score >= 55 ? '#f59e0b' : '#ef4444';
+
+    const card = document.createElement('div');
+    card.className = 'stock-card' + (s.alert ? ' has-alert' : '');
+    card.onclick   = () => openModal(s, p, ind);
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-head">
+          <div>
+            <div class="stock-code">${s.code}</div>
+            <div class="stock-name">${s.name}</div>
+          </div>
+          ${s.alert ? '<div class="alert-dot"></div>' : ''}
+        </div>
+        <div class="price-row">
+          <span class="price">${p ? p.price.toFixed(1) : '—'}</span>
+          ${p ? `<span class="change ${chgCls}">${chgSign}${chg.toFixed(1)} (${chgSign}${pct}%)</span>` : ''}
+        </div>
+      </div>
+
+      <div class="card-indicators">
+        <div class="ind-row">
+          <span class="ind-label">RSI</span>
+          <span class="ind-val ${ind.rsi > 70 ? 'bull' : ind.rsi < 30 ? 'bear' : 'neutral'}">${ind.rsi}</span>
+        </div>
+        <div class="ind-row">
+          <span class="ind-label">VOL</span>
+          <span class="ind-val neutral">${ind.volText || '—'}</span>
+        </div>
+        <div class="ind-row">
+          <span class="ind-label">HIGH</span>
+          <span class="ind-val neutral">${p ? p.high.toFixed(1) : '—'}</span>
+        </div>
+        <div class="ind-row">
+          <span class="ind-label">LOW</span>
+          <span class="ind-val neutral">${p ? p.low.toFixed(1) : '—'}</span>
+        </div>
+      </div>
+
+      <div class="score-section">
+        <div class="score-head">
+          <span class="score-label">v5.2H 進場評分</span>
+          <span class="score-num" style="color:${scoreColor}">${ind.score} / 100</span>
+        </div>
+        <div class="score-bar-bg">
+          <div class="score-bar" style="width:${ind.score}%;background:${scoreColor};"></div>
+        </div>
+        <div class="signal-tags">
+          ${ind.signals.map(sig => `<span class="sig-tag ${sig.cls}">${sig.label}</span>`).join('')}
+          ${s.alert ? '<span class="sig-tag" style="background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">⚡警報</span>' : ''}
+        </div>
+      </div>
+
+      <div class="industry-tag">${s.industry}</div>
+    `;
+
+    grid.appendChild(card);
+  });
 }
 
-function calcMACD(closes) {
-  if (closes.length < 26) return null;
-  const ema6 = calcEMA(closes, 6);
-  const ema13 = calcEMA(closes, 13);
-  if (!ema6 || !ema13) return null;
-  const macd = Math.round((ema6 - ema13) * 100) / 100;
-  return { macd, ema6, ema13 };
-}
+// ── Modal ──────────────────────────────────────
+function openModal(stock, priceData, ind) {
+  currentStock = { stock, priceData, ind };
 
-function calcVolumeSurge(volumes) {
-  if (volumes.length < 21) return null;
-  const recent = volumes[volumes.length - 1];
-  const avg = volumes.slice(-21, -1).reduce((a, b) => a + b, 0) / 20;
-  return Math.round((recent / avg) * 100) / 100;
-}
-
-function calcIndicators(rawData) {
-  const closes = rawData.map(d => d.close);
-  const volumes = rawData.map(d => d.Trading_Volume);
-  const latest = rawData[rawData.length - 1];
-
-  const rsi6 = calcRSI(closes, 6);
-  const ma5 = calcEMA(closes, 5);
-  const ma20 = calcEMA(closes, 20);
-  const macdData = calcMACD(closes);
-  const volSurge = calcVolumeSurge(volumes);
-
-  const goldenCross = ma5 && ma20 && ma5 > ma20;
-  const rsiSignal = rsi6 > 70 ? '超買' : rsi6 < 30 ? '超賣' : '中性';
-  const macdSignal = macdData ? (macdData.macd > 0 ? '偏多' : '偏空') : '-';
-  const volSignal = volSurge ? (volSurge >= 1.5 ? `放量 ${volSurge}x` : `正常 ${volSurge}x`) : '-';
-
-  let overallSignal = '觀望';
-  if (rsi6 < 30 && volSurge >= 1.5) overallSignal = '強力進場';
-  else if (rsi6 > 70 && macdData && macdData.macd < 0) overallSignal = '強力出場';
-  else if (goldenCross && volSurge >= 1.5) overallSignal = '趨勢啟動';
-  else if (!goldenCross && rsi6 < 50) overallSignal = '風險警示';
-
-  return {
-    price: latest.close,
-    date: latest.date,
-    rsi6, ma5, ma20,
-    macd: macdData ? macdData.macd : null,
-    volSurge, goldenCross,
-    rsiSignal, macdSignal, volSignal, overallSignal
-  };
-}
-
-async function openStockModal(stock) {
-  currentStock = stock;
-  currentIndicators = null;
-
-  document.getElementById('modal-title').textContent = `${stock.code} ${stock.name} · AI 分析`;
-  document.getElementById('modal-info').innerHTML = `
-    <div class="modal-info-item">
-      <div class="modal-info-label">股票代碼</div>
-      <div class="modal-info-value">${stock.code}</div>
-    </div>
-    <div class="modal-info-item">
-      <div class="modal-info-label">股票名稱</div>
-      <div class="modal-info-value">${stock.name}</div>
-    </div>
-  `;
-  document.getElementById('modal-indicators').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px;animation:blink 1s infinite">計算技術指標中...</div>';
-  document.getElementById('analyze-btn').disabled = true;
-  document.getElementById('analysis-result').style.display = 'none';
+  document.getElementById('modal-title').textContent = `${stock.code} ${stock.name}`;
   document.getElementById('modal-overlay').style.display = 'flex';
 
-  const rawData = await fetchPrice(stock.code);
-  if (!rawData || rawData.length < 25) {
-    document.getElementById('modal-indicators').innerHTML = '<div style="color:var(--red);font-size:13px;">資料不足，無法計算指標</div>';
-    return;
-  }
-
-  const ind = calcIndicators(rawData);
-  currentIndicators = ind;
-
-  const rsiColor = ind.rsi6 > 70 ? 'var(--red)' : ind.rsi6 < 30 ? 'var(--green)' : 'var(--text)';
-  const maColor = ind.goldenCross ? 'var(--green)' : 'var(--red)';
-  const volColor = ind.volSurge >= 1.5 ? 'var(--amber)' : 'var(--text2)';
+  const p   = priceData;
+  const chg = p ? (p.price - p.prev) : 0;
+  const pct = p ? ((chg / p.prev) * 100).toFixed(2) : null;
+  const chgSign = chg > 0 ? '+' : '';
+  const scoreColor = ind.score >= 75 ? '#10b981' : ind.score >= 55 ? '#f59e0b' : '#ef4444';
 
   document.getElementById('modal-info').innerHTML = `
-    <div class="modal-info-item">
-      <div class="modal-info-label">最新收盤價</div>
-      <div class="modal-info-value" style="color:var(--accent2)">${ind.price.toFixed(2)}</div>
+    <div class="info-item">
+      <div class="info-item-label">當前價格</div>
+      <div class="info-item-val">${p ? p.price.toFixed(1) : '—'}</div>
     </div>
-    <div class="modal-info-item">
-      <div class="modal-info-label">資料日期</div>
-      <div class="modal-info-value">${ind.date}</div>
+    <div class="info-item">
+      <div class="info-item-label">漲跌幅</div>
+      <div class="info-item-val" style="color:${chg>=0?'var(--red)':'var(--green)'}">${p ? `${chgSign}${chg.toFixed(1)} (${chgSign}${pct}%)` : '—'}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-item-label">RSI(14) 估算</div>
+      <div class="info-item-val" style="color:${ind.rsi>70?'var(--red)':ind.rsi<30?'var(--green)':'var(--text)'}">${ind.rsi}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-item-label">產業類別</div>
+      <div class="info-item-val" style="font-size:11px;color:var(--text2)">${stock.sector}</div>
     </div>
   `;
 
-  document.getElementById('modal-indicators').innerHTML = `
-    <div class="indicator-row">
-      <span class="indicator-name">RSI（6日）</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="indicator-value" style="color:${rsiColor}">${ind.rsi6 || '-'}</span>
-        <span class="indicator-badge badge-${ind.rsi6 > 70 ? 'red' : ind.rsi6 < 30 ? 'green' : 'blue'}">${ind.rsiSignal}</span>
-      </div>
+  document.getElementById('modal-score').innerHTML = `
+    <div class="score-display-head">
+      <span class="score-display-label">v5.2H 進場評分（參考 TradingView 為主）</span>
+      <span class="score-display-num" style="color:${scoreColor}">${ind.score} / 100</span>
     </div>
-    <div class="indicator-row">
-      <span class="indicator-name">均線（5日 / 20日）</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="indicator-value">${ind.ma5 || '-'} / ${ind.ma20 || '-'}</span>
-        <span class="indicator-badge ${ind.goldenCross ? 'badge-green' : 'badge-red'}" style="color:${maColor}">${ind.goldenCross ? '黃金交叉' : '死亡交叉'}</span>
-      </div>
+    <div class="score-display-bar-bg">
+      <div class="score-display-bar" style="width:${ind.score}%;background:${scoreColor}"></div>
     </div>
-    <div class="indicator-row">
-      <span class="indicator-name">MACD</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="indicator-value">${ind.macd || '-'}</span>
-        <span class="indicator-badge badge-${ind.macd > 0 ? 'green' : 'red'}">${ind.macdSignal}</span>
-      </div>
-    </div>
-    <div class="indicator-row">
-      <span class="indicator-name">成交量比（20日均）</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="indicator-value" style="color:${volColor}">${ind.volSurge || '-'}x</span>
-        <span class="indicator-badge badge-${ind.volSurge >= 1.5 ? 'amber' : 'blue'}">${ind.volSignal}</span>
-      </div>
-    </div>
-    <div class="indicator-row" style="border-top:0.5px solid var(--border2);margin-top:4px;padding-top:12px;">
-      <span class="indicator-name" style="font-weight:500;color:var(--text)">綜合訊號判斷</span>
-      <span class="badge ${getBadgeClass(ind.overallSignal)}" style="font-size:12px;">${ind.overallSignal}</span>
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+      ${ind.signals.map(sig => `<span class="sig-tag ${sig.cls}">${sig.label}</span>`).join('')}
     </div>
   `;
 
   document.getElementById('analyze-btn').disabled = false;
+  document.getElementById('analyze-btn').textContent = '🤖 Claude AI 即時分析 → Telegram';
+  document.getElementById('analysis-result').style.display = 'none';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
 }
 
 async function runAnalysis() {
-  if (!currentStock || !currentIndicators) return;
-
+  if (!currentStock) return;
+  const { stock, priceData, ind } = currentStock;
   const btn = document.getElementById('analyze-btn');
   const resultDiv = document.getElementById('analysis-result');
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="analyzing-spinner"></span>Claude 分析中，請稍候...';
-  resultDiv.style.display = 'none';
+  btn.textContent = '分析中...';
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="loading-spinner"><div class="spinner"></div>Claude 分析中，請稍候...</div>';
 
-  const ind = currentIndicators;
   const payload = {
-    ticker: currentStock.code,
-    price: ind.price,
-    rsi: ind.rsi6,
-    signal: `手動分析-${ind.overallSignal}`,
-    time: ind.date,
-    extra: `均線：${ind.goldenCross ? '黃金交叉' : '死亡交叉'}，MACD：${ind.macd}，成交量比：${ind.volSurge}x`
+    ticker:  stock.code,
+    price:   priceData ? priceData.price : 0,
+    rsi:     ind.rsi,
+    signal:  ind.signals.map(s => s.label).join(' / '),
+    score:   ind.score,
+    pos:     ind.score >= 75 ? '30-40%' : ind.score >= 55 ? '20%' : '觀望',
+    time:    new Date().toLocaleString('zh-TW'),
   };
 
   try {
-    const res = await fetch(WEBHOOK_URL, {
+    const res = await fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
-
-    if (res.ok) {
-      resultDiv.style.display = 'block';
-      resultDiv.className = 'analysis-result success';
-      resultDiv.innerHTML = `✅ 分析請求已發送！\n\nClaude AI 正在分析以下資料：\n股票：${currentStock.code} ${currentStock.name}\n價格：${ind.price}\nRSI：${ind.rsi6}（${ind.rsiSignal}）\n均線：${ind.goldenCross ? '黃金交叉' : '死亡交叉'}\nMACD：${ind.macd}（${ind.macdSignal}）\n成交量：${ind.volSurge}x（${ind.volSignal}）\n綜合訊號：${ind.overallSignal}\n\n📱 分析結果將在幾秒內發送到 Telegram！`;
-      btn.innerHTML = '✅ 已發送！再次分析';
-    } else {
-      throw new Error('發送失敗');
-    }
+    const text = await res.text();
+    resultDiv.innerHTML = `<div class="analysis-result">✅ 分析請求已發送至 Telegram！\n\n股票：${stock.code} ${stock.name}\n價格：${payload.price}\n評分：${payload.score}/100\n建議倉位：${payload.pos}</div>`;
+    btn.textContent = '✅ 已發送';
   } catch(e) {
-    resultDiv.style.display = 'block';
-    resultDiv.className = 'analysis-result error';
-    resultDiv.innerHTML = `❌ 發送失敗：${e.message}`;
-    btn.innerHTML = '🤖 Claude AI 即時分析 → Telegram';
-  }
-
-  btn.disabled = false;
-}
-
-function closeModal(event) {
-  if (!event || event.target === document.getElementById('modal-overlay')) {
-    document.getElementById('modal-overlay').style.display = 'none';
+    resultDiv.innerHTML = `<div class="analysis-result" style="color:var(--red)">❌ 發送失敗：${e.message}</div>`;
+    btn.disabled = false;
+    btn.textContent = '🤖 Claude AI 即時分析 → Telegram';
   }
 }
 
-function getBadgeClass(signal) {
-  if (!signal) return 'badge-blue';
-  if (signal.includes('進場')) return 'badge-green';
-  if (signal.includes('出場')) return 'badge-red';
-  if (signal.includes('趨勢') || signal.includes('黃金')) return 'badge-blue';
-  if (signal.includes('風險') || signal.includes('死亡')) return 'badge-amber';
-  return 'badge-purple';
-}
-
-function getRsiColor(rsi) {
-  if (!rsi || isNaN(rsi)) return '#94a3b8';
-  if (rsi > 70) return '#fc8181';
-  if (rsi < 30) return '#48bb78';
-  return '#63b3ed';
-}
-
+// ── 載入股價 ──────────────────────────────────
 async function loadPrices() {
-  const open = isMarketOpen();
-  document.getElementById('market-status-badge').textContent = open ? '交易中' : '休市中';
-  document.getElementById('market-status-badge').className = `market-status ${open ? 'market-open' : 'market-closed'}`;
+  updateMarketStatus();
+  const promises = STOCKS.map(s => fetchPrice(s.code).then(p => { if(p) priceCache[s.code] = p; }));
+  await Promise.allSettled(promises);
+  renderCards();
+  document.getElementById('update-time').textContent = new Date().toLocaleTimeString('zh-TW');
+}
 
-  const grid = document.getElementById('stocks-grid');
-  grid.innerHTML = WATCH_STOCKS.map(s =>
-    `<div class="stock-card" id="card-${s.code}">
-      <div style="margin-bottom:4px;"><span class="stock-code">${s.code}</span></div>
-      <div class="stock-name">${s.name}</div>
-      <div class="price-loading">載入中...</div>
-    </div>`
-  ).join('');
+// ── 載入警報記錄 ──────────────────────────────
+async function loadAlerts() {
+  const container = document.getElementById('table-container');
+  try {
+    const res  = await fetch(SHEET_URL);
+    const text = await res.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+    const rows = json.table?.rows || [];
 
-  for (const stock of WATCH_STOCKS) {
-    const card = document.getElementById(`card-${stock.code}`);
-    const rawData = await fetchPrice(stock.code);
-
-    if (rawData && rawData.length > 0) {
-      const latest = rawData[rawData.length - 1];
-      const prev = rawData.length > 1 ? rawData[rawData.length - 2].close : latest.close;
-      const price = latest.close;
-      const change = price - prev;
-      const changePct = prev ? ((change / prev) * 100) : 0;
-      const changeClass = change > 0 ? 'change-up' : change < 0 ? 'change-down' : 'change-flat';
-      const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '－';
-
-      priceCache[stock.code] = { rawData, price };
-
-      card.onclick = () => openStockModal(stock);
-      card.innerHTML = `
-        <div style="margin-bottom:4px;"><span class="stock-code">${stock.code}</span></div>
-        <div class="stock-name">${stock.name}</div>
-        <div class="stock-price">${price.toFixed(2)}</div>
-        <div class="stock-change ${changeClass}">
-          ${changeSymbol} ${Math.abs(change).toFixed(2)}
-          <span style="font-size:11px">(${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)</span>
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-family:'Share Tech Mono',monospace;">H ${latest.max.toFixed(2)} · L ${latest.min.toFixed(2)}</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px;">${latest.date} ${open ? '即時' : '收盤'}</div>
-        <div class="analyze-hint">點擊 AI 分析 →</div>
-      `;
-    } else {
-      card.innerHTML = `
-        <div style="margin-bottom:4px;"><span class="stock-code">${stock.code}</span></div>
-        <div class="stock-name">${stock.name}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:8px;">資料載入失敗</div>
-      `;
+    if (!rows.length) {
+      container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:12px;">尚無警報記錄</div>';
+      updateStats([]);
+      return;
     }
-  }
 
-  const now = new Date();
-  document.getElementById('last-update').textContent = `最後更新：${now.toLocaleTimeString('zh-TW')}`;
+    alertsData = rows.map(r => ({
+      time:     r.c[0]?.f || r.c[0]?.v || '',
+      ticker:   r.c[1]?.v || '',
+      price:    r.c[2]?.v || '',
+      rsi:      r.c[3]?.v || '',
+      signal:   r.c[4]?.v || '',
+      analysis: r.c[5]?.v || '',
+    })).filter(r => r.ticker || r.signal);
+
+    updateStats(alertsData);
+    updateFilters(alertsData);
+    renderTable(alertsData);
+  } catch(e) {
+    container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--red);font-size:12px;">載入失敗：確認 Google Sheets 已設為公開</div>`;
+  }
+}
+
+function updateStats(data) {
+  document.getElementById('stat-total').textContent = data.length;
+  document.getElementById('stat-buy').textContent   = data.filter(d => /進場|BUY/.test(d.signal)).length;
+  document.getElementById('stat-sell').textContent  = data.filter(d => /出場|SELL|停損/.test(d.signal)).length;
+  document.getElementById('stat-trend').textContent = data.filter(d => /趨勢|交叉/.test(d.signal)).length;
+}
+
+function updateFilters(data) {
+  const tickers = [...new Set(data.map(d => d.ticker).filter(Boolean))];
+  const bar = document.getElementById('filter-bar');
+  bar.innerHTML = `<button class="filter-btn ${currentFilter==='全部'?'active':''}" onclick="filterStock('全部')">全部</button>`;
+  tickers.forEach(t => {
+    bar.innerHTML += `<button class="filter-btn ${currentFilter===t?'active':''}" onclick="filterStock('${t}')">${t}</button>`;
+  });
 }
 
 function filterStock(ticker) {
   currentFilter = ticker;
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent === ticker);
-  });
-  renderTable(allData);
+  updateFilters(alertsData);
+  const filtered = ticker === '全部' ? alertsData : alertsData.filter(d => d.ticker === ticker);
+  renderTable(filtered);
+}
+
+function getSignalBadge(signal) {
+  if (/強力|BUY★/.test(signal)) return `<span class="sig-tag sig-buy-star">${signal}</span>`;
+  if (/進場|BUY/.test(signal))   return `<span class="sig-tag sig-buy">${signal}</span>`;
+  if (/出場|SELL/.test(signal))  return `<span class="sig-tag sig-sell">${signal}</span>`;
+  if (/停損|STOP/.test(signal))  return `<span class="sig-tag sig-stop">${signal}</span>`;
+  if (/趨勢|交叉/.test(signal))  return `<span class="sig-tag sig-pb">${signal}</span>`;
+  return `<span class="sig-tag sig-watch">${signal}</span>`;
 }
 
 function renderTable(data) {
-  const filtered = currentFilter === '全部' ? data : data.filter(row => row.ticker === currentFilter);
   const container = document.getElementById('table-container');
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty">尚無警報記錄，等待 TradingView 觸發訊號...</div>';
+  if (!data.length) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-size:12px;">沒有符合的記錄</div>';
     return;
   }
-
-  const rows = filtered.slice().reverse().map(row => {
-    const rsi = parseFloat(row.rsi);
-    const rsiWidth = isNaN(rsi) ? 0 : Math.min(100, Math.max(0, rsi));
-    const rsiColor = getRsiColor(rsi);
-    const badgeClass = getBadgeClass(row.signal);
-    const shortAnalysis = row.analysis ? row.analysis.substring(0, 200) + (row.analysis.length > 200 ? '...' : '') : '-';
-
-    return `<tr>
-      <td><span class="time-text">${row.time || '-'}</span></td>
-      <td><span class="ticker">${row.ticker || '-'}</span></td>
-      <td><span class="price-text">${row.price ? parseFloat(row.price).toFixed(2) : '-'}</span></td>
-      <td>
-        <div class="rsi-bar">
-          <span class="time-text" style="min-width:32px">${isNaN(rsi) ? '-' : rsi.toFixed(1)}</span>
-          <div class="rsi-track"><div class="rsi-fill" style="width:${rsiWidth}%;background:${rsiColor}"></div></div>
-        </div>
-      </td>
-      <td><span class="badge ${badgeClass}">${row.signal || '-'}</span></td>
-      <td><div class="analysis-text">${shortAnalysis}</div></td>
-    </tr>`;
-  }).join('');
-
   container.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>時間</th><th>股票</th><th>警報價格</th><th>RSI</th><th>訊號</th><th>Claude 分析</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>時間</th><th>股票</th><th>價格</th><th>RSI</th><th>訊號</th><th>Claude 分析</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map(d => `
+            <tr>
+              <td class="td-time">${d.time}</td>
+              <td class="td-ticker">${d.ticker}</td>
+              <td class="td-price">${d.price}</td>
+              <td style="font-family:var(--mono);font-size:12px;">${d.rsi}</td>
+              <td>${getSignalBadge(d.signal)}</td>
+              <td class="td-analysis">${d.analysis ? d.analysis.substring(0,200)+(d.analysis.length>200?'...':'') : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
-function updateMetrics(data) {
-  document.getElementById('total-count').textContent = data.length;
-  document.getElementById('buy-count').textContent = data.filter(r => r.signal && r.signal.includes('進場')).length;
-  document.getElementById('sell-count').textContent = data.filter(r => r.signal && r.signal.includes('出場')).length;
-  document.getElementById('trend-count').textContent = data.filter(r => r.signal && (r.signal.includes('趨勢') || r.signal.includes('風險'))).length;
-}
-
-function updateFilters(data) {
-  const tickers = [...new Set(data.map(r => r.ticker).filter(Boolean))];
-  const filterDiv = document.getElementById('stock-filter');
-  filterDiv.innerHTML = `<button class="filter-btn ${currentFilter === '全部' ? 'active' : ''}" onclick="filterStock('全部')">全部</button>`;
-  tickers.forEach(ticker => {
-    filterDiv.innerHTML += `<button class="filter-btn ${currentFilter === ticker ? 'active' : ''}" onclick="filterStock('${ticker}')">${ticker}</button>`;
-  });
-}
-
-async function loadAlerts() {
-  try {
-    const res = await fetch(API_URL);
-    const text = await res.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows = json.table.rows;
-
-    if (!rows || rows.length === 0) {
-      allData = [];
-      renderTable([]);
-      updateMetrics([]);
-      return;
-    }
-
-    allData = rows.map(row => ({
-      time: row.c[0]?.f || row.c[0]?.v || '',
-      ticker: row.c[1]?.v || '',
-      price: row.c[2]?.v || '',
-      rsi: row.c[3]?.v || '',
-      signal: row.c[4]?.v || '',
-      analysis: row.c[5]?.v || ''
-    })).filter(r => r.ticker || r.signal);
-
-    updateMetrics(allData);
-    updateFilters(allData);
-    renderTable(allData);
-  } catch (err) {
-    document.getElementById('table-container').innerHTML =
-      `<div class="error-msg">警報記錄載入失敗<br><small>${err.message}</small></div>`;
-  }
-}
-
-async function init() {
+// ── 主程式 ──────────────────────────────────────
+async function loadAll() {
   await loadPrices();
   await loadAlerts();
 }
 
-init();
+loadAll();
 setInterval(loadPrices, isMarketOpen() ? 30000 : 300000);
 setInterval(loadAlerts, 60000);
 </script>
